@@ -455,34 +455,6 @@ export function HeroPromptToAppV4() {
       className="pointer-events-none relative w-full"
     >
       <div className="relative mx-auto w-full max-w-[1080px]">
-        {/* Status eyebrow — quiet line of text above the portal that
-            reads like part of the hero copy: "Building Time Tracker"
-            then "Time Tracker added to your portal". Tiny spinner /
-            checkmark on the left for visual rhythm. */}
-        <div
-          className="mb-4 flex items-center justify-center gap-2 text-[12px] text-white/55 transition-opacity duration-300"
-          style={{ opacity: statusOpacity }}
-        >
-          <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center text-white/55">
-            {statusBuilt ? (
-              <svg
-                viewBox="0 0 16 16"
-                className="h-3.5 w-3.5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.75"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M3.5 8.5l3 3 6-6" />
-              </svg>
-            ) : (
-              <span className="h-2.5 w-2.5 animate-spin rounded-full border border-white/30 border-t-white/85" />
-            )}
-          </span>
-          <span>{statusLabel}</span>
-        </div>
-
         {/* Single dominant Client Portal panel — the only UI element on
             stage. Apps materialize in the sidebar with shimmer + glow,
             no prompt UI, no LLM text. The rhythmic arrivals are the
@@ -498,6 +470,33 @@ export function HeroPromptToAppV4() {
             className="pointer-events-none absolute inset-0 z-10"
             style={shimmerStyle}
           ></div>
+
+          {/* In-screen status notification — quiet dark pill in the
+              top-right of the portal showing "Building <app>" with a
+              spinner, then "<app> added to your portal" with a check. */}
+          <div
+            className="pointer-events-none absolute right-3 top-3 z-20 flex items-center gap-2 rounded-full border border-white/10 bg-black/55 px-2.5 py-1 text-[11px] leading-none text-white/70 backdrop-blur-md transition-opacity duration-300"
+            style={{ opacity: statusOpacity }}
+          >
+            <span className="flex h-3 w-3 shrink-0 items-center justify-center text-white/70">
+              {statusBuilt ? (
+                <svg
+                  viewBox="0 0 16 16"
+                  className="h-3 w-3"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M3.5 8.5l3 3 6-6" />
+                </svg>
+              ) : (
+                <span className="h-2 w-2 animate-spin rounded-full border border-white/30 border-t-white/85" />
+              )}
+            </span>
+            <span>{statusLabel}</span>
+          </div>
 
           <div className="grid h-full min-w-0 grid-cols-[180px_1fr] gap-0">
             {/* Sidebar */}
