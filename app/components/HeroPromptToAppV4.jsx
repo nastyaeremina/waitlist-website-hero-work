@@ -458,12 +458,13 @@ export function HeroPromptToAppV4() {
       className="pointer-events-none relative w-full"
     >
       <div className="relative mx-auto w-full max-w-[1080px]">
-        {/* Stacked prompt thread — each sent prompt remains as a settled
-            message, new prompts type in below. Current bubble shows
-            cursor while typing and dots during the AI-generating beat. */}
+        {/* Stacked prompt thread — fixed height reserves space for the
+            full thread so the portal below never shifts as new bubbles
+            appear. Bubbles stack from the bottom upward, so the most
+            recently sent prompt always sits closest to the portal. */}
         <div
-          className="mb-5 flex w-full max-w-[420px] flex-col gap-2"
-          style={{ opacity: stackOpacity }}
+          className="mb-5 flex w-full max-w-[420px] flex-col justify-end gap-1.5"
+          style={{ opacity: stackOpacity, minHeight: 132 }}
         >
           {bubbles.map((b) => (
             <PromptBubble
@@ -552,31 +553,29 @@ export function HeroPromptToAppV4() {
 function PromptBubble({ text, cursor, dots, opacity }) {
   return (
     <div
-      className="flex items-start gap-3 rounded-2xl border border-white/[0.08] bg-[#141416] px-4 py-3 shadow-[0_10px_40px_rgba(0,0,0,0.45)] transition-opacity duration-300"
+      className="flex items-center gap-2.5 rounded-xl border border-white/[0.07] bg-[#141416] px-3 py-2 transition-opacity duration-300"
       style={{ opacity }}
     >
-      <span className="mt-[1px] flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10 text-white/85">
-        <SparkleIcon className="h-3.5 w-3.5" />
+      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/10 text-white/80">
+        <SparkleIcon className="h-3 w-3" />
       </span>
-      <div className="min-w-0 flex-1">
-        <div className="text-[13px] leading-[1.45] text-white/85">
-          {text || (
-            <span className="text-white/35">
-              e.g. Build a time tracker for my team
-            </span>
-          )}
-          {cursor && (
-            <span className="ml-[1px] inline-block h-[13px] w-[1px] -translate-y-[1px] animate-pulse bg-white/85 align-middle" />
-          )}
-        </div>
-        {dots && (
-          <div className="mt-2 flex items-center gap-1" aria-hidden="true">
-            <LoadingDot delay={0} />
-            <LoadingDot delay={160} />
-            <LoadingDot delay={320} />
-          </div>
+      <div className="min-w-0 flex-1 text-[12px] leading-[1.35] text-white/85">
+        {text || (
+          <span className="text-white/35">
+            e.g. Build a time tracker for my team
+          </span>
+        )}
+        {cursor && (
+          <span className="ml-[1px] inline-block h-[11px] w-[1px] -translate-y-[1px] animate-pulse bg-white/85 align-middle" />
         )}
       </div>
+      {dots && (
+        <div className="flex shrink-0 items-center gap-1" aria-hidden="true">
+          <LoadingDot delay={0} />
+          <LoadingDot delay={160} />
+          <LoadingDot delay={320} />
+        </div>
+      )}
     </div>
   );
 }
