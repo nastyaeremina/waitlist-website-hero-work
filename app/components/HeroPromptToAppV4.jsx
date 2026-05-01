@@ -414,9 +414,9 @@ export function HeroPromptToAppV4() {
           style={{
             height: "min(58vh, 560px)",
             WebkitMaskImage:
-              "linear-gradient(to bottom, black 0%, black 82%, transparent 100%)",
+              "linear-gradient(to bottom, black 0%, black 45%, rgba(0,0,0,0.7) 70%, rgba(0,0,0,0.25) 88%, transparent 100%)",
             maskImage:
-              "linear-gradient(to bottom, black 0%, black 82%, transparent 100%)",
+              "linear-gradient(to bottom, black 0%, black 45%, rgba(0,0,0,0.7) 70%, rgba(0,0,0,0.25) 88%, transparent 100%)",
           }}
         >
           {/* Shimmer sweep — diagonal highlight that crosses the panel
