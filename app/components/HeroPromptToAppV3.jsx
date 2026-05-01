@@ -320,17 +320,10 @@ export function HeroPromptToAppV3() {
   // the panel never reads as an empty/error state.
   const activeApp = sent ? app : cycleIndex > 0 ? APPS[cycleIndex - 1] : APPS[0];
 
-  // Card fly: prompt panel "compresses" + translates right at SEND.
-  const promptFly = sending
-    ? {
-        opacity: 1 - (cycleT - SEND) / (FLY_END - SEND),
-        transform: `translateX(${((cycleT - SEND) / (FLY_END - SEND)) * 80}px) scale(${
-          1 - ((cycleT - SEND) / (FLY_END - SEND)) * 0.1
-        })`,
-      }
-    : sent
-    ? { opacity: 0, transform: "translateX(80px) scale(0.9)" }
-    : { opacity: 1, transform: "translateX(0) scale(1)" };
+  // Prompt panel stays put after sending — the prompt remains visible
+  // so the left side never reads as empty. The new app entry on the
+  // right is the only thing that changes.
+  const promptFly = { opacity: 1, transform: "translateX(0) scale(1)" };
 
   return (
     <div
