@@ -371,6 +371,32 @@ export function HeroPromptToAppV4() {
     ? Math.sin(anticipateP * Math.PI) // 0 → 1 → 0 over the window
     : 0;
 
+  // Status eyebrow above the portal — a quiet line of text that says
+  // what's happening. Reads as part of the hero copy rather than UI.
+  // Phases:
+  //   0..ARRIVE_END                         → "Building <app>"
+  //   ARRIVE_END..ARRIVE_END+1200           → "<app> added to your portal"
+  //   ARRIVE_END+1200..CYCLE_MS-300         → fade out and idle
+  //   last 300ms                            → swap to next app's label
+  const STATUS_BUILT_END = ARRIVE_END + 1200;
+  const STATUS_FADE_OUT_START = STATUS_BUILT_END;
+  const STATUS_FADE_OUT_END = STATUS_BUILT_END + 400;
+  let statusLabel;
+  let statusBuilt;
+  if (cycleT < ARRIVE_END) {
+    statusLabel = `Building ${app.label}`;
+    statusBuilt = false;
+  } else {
+    statusLabel = `${app.label} added to your portal`;
+    statusBuilt = true;
+  }
+  const statusOpacity =
+    cycleT < STATUS_FADE_OUT_START
+      ? 1
+      : cycleT < STATUS_FADE_OUT_END
+      ? 1 - (cycleT - STATUS_FADE_OUT_START) / (STATUS_FADE_OUT_END - STATUS_FADE_OUT_START)
+      : 0;
+
   // Shimmer sweep across the portal during the arrive window.
   const shimmerActive = cycleT >= ARRIVE_START && cycleT < ARRIVE_END;
   const shimmerP = shimmerActive
@@ -394,6 +420,34 @@ export function HeroPromptToAppV4() {
       className="pointer-events-none relative w-full"
     >
       <div className="relative mx-auto w-full max-w-[1080px]">
+        {/* Status eyebrow — quiet line of text above the portal that
+            reads like part of the hero copy: "Building Time Tracker"
+            then "Time Tracker added to your portal". Tiny spinner /
+            checkmark on the left for visual rhythm. */}
+        <div
+          className="mb-4 flex items-center justify-center gap-2 text-[12px] text-white/55 transition-opacity duration-300"
+          style={{ opacity: statusOpacity }}
+        >
+          <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center text-white/55">
+            {statusBuilt ? (
+              <svg
+                viewBox="0 0 16 16"
+                className="h-3.5 w-3.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3.5 8.5l3 3 6-6" />
+              </svg>
+            ) : (
+              <span className="h-2.5 w-2.5 animate-spin rounded-full border border-white/30 border-t-white/85" />
+            )}
+          </span>
+          <span>{statusLabel}</span>
+        </div>
+
         {/* Single dominant Client Portal panel — the only UI element on
             stage. Apps materialize in the sidebar with shimmer + glow,
             no prompt UI, no LLM text. The rhythmic arrivals are the
