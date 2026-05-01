@@ -263,15 +263,19 @@ const CYCLE_MS = 10500;
 const TYPE_START = 300;
 const TYPE_END = 2700;
 const SEND = 3100;
-// Two-stage send animation:
-//  • SEND..TEXT_FADE_END: bubble holds in place; text content gracefully
-//    fades out so the moving shape never carries shrinking glyphs.
-//  • TEXT_FADE_END..FLY_END: empty bubble shape glides along an arced
-//    path into the sidebar landing point with ease-in-out cubic — feels
-//    weighted, not dissolved.
-const TEXT_FADE_END = 3450;
-const FLY_END = 4400;
-const HIGHLIGHT_END = 5800;
+// Message-send pattern:
+//  • SEND..LOADING_END: bubble shows three pulsing dots beneath the
+//    prompt — the "AI is generating" beat.
+//  • LOADING_END..SHIMMER_END: a diagonal shimmer sweeps across the
+//    portal panel and at the same time the sidebar entry pops in and
+//    the main panel cross-fades. By the end of the shimmer everything
+//    has updated.
+//  • TEXT_FADE_START..CYCLE_MS: bubble text gently fades out so the
+//    next cycle starts from a clean bubble.
+const LOADING_END = 3800;
+const SHIMMER_END = 4600;
+const UPDATE_END = 4600; // sidebar + main settle by here
+const TEXT_FADE_START = 8800;
 const RESET_PAUSE = 1800;
 
 // ── Hook: cycle clock ─────────────────────────────────────────────
@@ -370,92 +374,76 @@ export function HeroPromptToAppV4() {
   const cycleT = inResetPause ? CYCLE_MS : elapsed % CYCLE_MS;
   const app = APPS[cycleIndex];
 
-  const sending = cycleT >= SEND && cycleT < FLY_END;
-  const sent = cycleT >= FLY_END;
   const promptText = typed(app.prompt, cycleT);
   const showCursor = cycleT >= TYPE_START && cycleT < SEND;
+  const showDots = cycleT >= SEND && cycleT < LOADING_END;
 
-  // Sidebar contents.
+  // Sidebar updates at LOADING_END, in sync with the start of the
+  // shimmer. Main panel cross-fades during the same window.
+  const updated = cycleT >= UPDATE_END;
   let installed = cycleIndex;
-  if (sent) installed = cycleIndex + 1;
+  if (updated) installed = cycleIndex + 1;
   if (inResetPause) installed = APPS.length;
 
-  // Active app in main = the most recently sent one. Before the very
-  // first send, show a clean Home empty state instead of any app.
-  const showHome = cycleIndex === 0 && !sent;
-  const activeApp = sent ? app : cycleIndex > 0 ? APPS[cycleIndex - 1] : null;
+  // Active app in main = the most recently committed one. Before the
+  // very first update, show a clean Home empty state.
+  const showHome = cycleIndex === 0 && !updated;
+  const activeApp = updated ? app : cycleIndex > 0 ? APPS[cycleIndex - 1] : null;
 
-  // Entry progress for the just-installed row (0 → 1 across FLY+highlight).
+  // Entry progress for the just-installed row, normalized 0→1 across
+  // the shimmer window so the row pops in mid-shimmer.
   const entryT =
-    cycleT >= SEND && cycleT < HIGHLIGHT_END
-      ? (cycleT - SEND) / (HIGHLIGHT_END - SEND)
+    cycleT >= LOADING_END && cycleT < SHIMMER_END + 800
+      ? (cycleT - LOADING_END) / (SHIMMER_END + 800 - LOADING_END)
       : null;
 
-  // Two-stage send animation. Stage 1: text fades out while the bubble
-  // holds in place (so glyphs never shrink mid-flight). Stage 2: empty
-  // bubble glides along an arced path into the sidebar with ease-in-out
-  // cubic, scale tapering at the end so it dovetails into the new row.
   const clamp01 = (v) => Math.max(0, Math.min(1, v));
-  const easeInOutCubic = (t) =>
-    t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
-  const textFadeP = clamp01(
-    (cycleT - SEND) / (TEXT_FADE_END - SEND)
-  );
-  const flyRawP =
-    cycleT < TEXT_FADE_END
-      ? 0
-      : cycleT >= FLY_END
-      ? 1
-      : (cycleT - TEXT_FADE_END) / (FLY_END - TEXT_FADE_END);
-  const flyP = easeInOutCubic(flyRawP);
+  // Shimmer sweep across the portal: 0 → 1 over the shimmer window,
+  // converted to a diagonal background-position offset.
+  const shimmerActive = cycleT >= LOADING_END && cycleT < SHIMMER_END;
+  const shimmerP = shimmerActive
+    ? (cycleT - LOADING_END) / (SHIMMER_END - LOADING_END)
+    : 0;
+  // Sweep moves left → right; a soft white band reveals through.
+  const shimmerCenter = -30 + shimmerP * 160; // % across
+  const shimmerStyle = shimmerActive
+    ? {
+        opacity: Math.sin(shimmerP * Math.PI), // peak in middle
+        background: `linear-gradient(105deg, transparent ${
+          shimmerCenter - 20
+        }%, rgba(255,255,255,0.10) ${shimmerCenter}%, transparent ${
+          shimmerCenter + 20
+        }%)`,
+      }
+    : { opacity: 0 };
 
-  const bubbleVisible = cycleT >= TYPE_START && !sent;
-  // Bubble is anchored to the top-left of the portal area, so the fly
-  // path is mostly vertical: it slides down a short distance into the
-  // sidebar landing point with a slight left nudge to slot into the
-  // app-row position inside the sidebar's padding.
-  const TX = 8;   // landing x — tiny right nudge into sidebar padding
-  const TY = 230; // landing y
-  const arcY = Math.sin(flyP * Math.PI) * 18;
-  const bubbleScale = 1 - flyP * 0.7;
-  const bubbleOpacity =
-    flyP < 0.85 ? 1 - flyP * 0.55 : Math.max(0, 1 - (flyP - 0.85) / 0.15);
-
-  // Pre-fly intro: gentle 240ms fade-in once the bubble appears so it
-  // doesn't pop in at TYPE_START.
+  // Bubble intro and cross-cycle fade.
   const introP = clamp01((cycleT - TYPE_START) / 240);
+  const fadeOutP = clamp01(
+    (cycleT - TEXT_FADE_START) / (CYCLE_MS - TEXT_FADE_START)
+  );
 
-  const bubbleStyle = sending
-    ? {
-        opacity: bubbleOpacity,
-        transform: `translate(${flyP * TX}px, ${flyP * TY + arcY}px) scale(${bubbleScale})`,
-      }
-    : sent
-    ? {
-        opacity: 0,
-        transform: `translate(${TX}px, ${TY}px) scale(${1 - 0.7})`,
-      }
-    : {
-        opacity: bubbleVisible ? introP : 0,
-        transform: `translate(0, ${(1 - introP) * -8}px) scale(${0.96 + introP * 0.04})`,
-      };
-  const bubbleContentOpacity =
-    cycleT < SEND
-      ? introP
-      : cycleT >= TEXT_FADE_END
-      ? 0
-      : 1 - textFadeP;
+  const bubbleVisible = cycleT >= TYPE_START;
+  const bubbleStyle = {
+    opacity: bubbleVisible ? introP * (1 - fadeOutP) : 0,
+    transform: `translateY(${(1 - introP) * -8}px)`,
+  };
+  const bubbleContentOpacity = bubbleVisible
+    ? introP * (1 - fadeOutP)
+    : 0;
 
   return (
     <div
       aria-hidden="true"
       className="pointer-events-none relative w-full"
     >
-      <div className="relative mx-auto w-full max-w-[1080px] pt-10">
-        {/* Floating prompt bubble — lives above the portal, types out,
-            then translates down + left into the sidebar position as the
-            new app entry. */}
+      <div className="relative mx-auto w-full max-w-[1080px] pt-28 md:pt-32">
+        {/* Prompt bubble — lives entirely above the portal. After SEND,
+            three pulsing dots appear under the prompt for a beat (the
+            "AI is generating" moment), then the portal shimmers and
+            updates with the new app. The bubble itself doesn't move —
+            the change happens inside the portal screen below. */}
         <div
           className="absolute left-0 top-0 z-20 w-full max-w-[420px]"
           style={{
@@ -468,17 +456,28 @@ export function HeroPromptToAppV4() {
               <SparkleIcon className="h-3.5 w-3.5" />
             </span>
             <div
-              className="min-w-0 flex-1 text-[13px] leading-[1.45] text-white/85"
+              className="min-w-0 flex-1"
               style={{ opacity: bubbleContentOpacity }}
             >
-              {promptText || (
-                <span className="text-white/35">
-                  e.g. Build a time tracker for my team
-                </span>
-              )}
-              {showCursor && (
-                <span className="ml-[1px] inline-block h-[13px] w-[1px] -translate-y-[1px] animate-pulse bg-white/85 align-middle" />
-              )}
+              <div className="text-[13px] leading-[1.45] text-white/85">
+                {promptText || (
+                  <span className="text-white/35">
+                    e.g. Build a time tracker for my team
+                  </span>
+                )}
+                {showCursor && (
+                  <span className="ml-[1px] inline-block h-[13px] w-[1px] -translate-y-[1px] animate-pulse bg-white/85 align-middle" />
+                )}
+              </div>
+              <div
+                className="mt-2 flex items-center gap-1 transition-opacity duration-200"
+                style={{ opacity: showDots ? 1 : 0 }}
+                aria-hidden="true"
+              >
+                <LoadingDot delay={0} />
+                <LoadingDot delay={160} />
+                <LoadingDot delay={320} />
+              </div>
             </div>
           </div>
         </div>
@@ -494,6 +493,14 @@ export function HeroPromptToAppV4() {
               "linear-gradient(to bottom, black 0%, black 82%, transparent 100%)",
           }}
         >
+          {/* Shimmer sweep — diagonal highlight that crosses the panel
+              as the portal "regenerates" with the new app. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-10"
+            style={shimmerStyle}
+          ></div>
+
           <div className="grid h-full min-w-0 grid-cols-[180px_1fr] gap-0">
             {/* Sidebar */}
             <div className="flex h-full min-w-0 flex-col border-r border-white/[0.05] p-3">
@@ -545,6 +552,15 @@ export function HeroPromptToAppV4() {
         </div>
       </div>
     </div>
+  );
+}
+
+function LoadingDot({ delay = 0 }) {
+  return (
+    <span
+      className="studio-thinking-dot inline-block h-1.5 w-1.5 rounded-full bg-white/65"
+      style={{ animationDelay: `${delay}ms` }}
+    />
   );
 }
 
