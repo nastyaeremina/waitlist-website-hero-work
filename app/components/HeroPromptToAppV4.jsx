@@ -139,12 +139,12 @@ function TimeTrackerView() {
 function HelpdeskView() {
   return (
     <div className="flex h-full min-w-0 flex-col">
-      <PanelHeader title="Helpdesk" trailing="Open" />
+      <PanelHeader title="Helpdesk" />
       <div className="flex min-w-0 flex-1 flex-col gap-2 p-4">
         {[
-          { client: "Acme", subject: "Logo file missing from latest delivery", state: "Open", tone: "open" },
-          { client: "Lyra", subject: "Question about brand guideline section 3", state: "Open", tone: "open" },
-          { client: "Northwind", subject: "Final asset bundle approved", state: "Closed", tone: "closed" },
+          { client: "Acme", subject: "Logo file missing from latest delivery" },
+          { client: "Lyra", subject: "Question about brand guideline section 3" },
+          { client: "Northwind", subject: "Final asset bundle approved" },
         ].map((row, i) => (
           <div
             key={i}
@@ -156,15 +156,6 @@ function HelpdeskView() {
             <span className="shrink-0 text-[10.5px] text-white/45">·</span>
             <span className="min-w-0 flex-1 truncate text-[10.5px] text-white/65">
               {row.subject}
-            </span>
-            <span
-              className={
-                row.tone === "open"
-                  ? "shrink-0 whitespace-nowrap rounded-full border border-white/25 bg-white/[0.06] px-2 py-[1px] text-[9.5px] text-white/80"
-                  : "shrink-0 whitespace-nowrap rounded-full border border-white/10 px-2 py-[1px] text-[9.5px] text-white/45"
-              }
-            >
-              {row.state}
             </span>
           </div>
         ))}
