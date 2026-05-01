@@ -316,9 +316,9 @@ export function HeroPromptToAppV3() {
   const enteringIndex = sending || (sent && cycleT < FLY_END + 400) ? cycleIndex : -1;
 
   // Active app in main = the latest one that's been sent. Before the
-  // very first app sends, show the empty welcome state.
-  const showEmpty = cycleIndex === 0 && !sent;
-  const activeApp = sent ? app : cycleIndex > 0 ? APPS[cycleIndex - 1] : null;
+  // very first app sends we still show its preview at full opacity so
+  // the panel never reads as an empty/error state.
+  const activeApp = sent ? app : cycleIndex > 0 ? APPS[cycleIndex - 1] : APPS[0];
 
   // Card fly: prompt panel "compresses" + translates right at SEND.
   const promptFly = sending
@@ -428,29 +428,18 @@ export function HeroPromptToAppV3() {
 
               {/* Main */}
               <div className="relative h-full min-w-0">
-                {showEmpty ? (
-                  <div className="flex h-full flex-col items-center justify-center gap-1.5 px-6 text-center">
-                    <span className="text-[12px] font-medium text-white/70">
-                      Welcome
-                    </span>
-                    <span className="text-[10.5px] text-white/35">
-                      New apps will appear here
-                    </span>
-                  </div>
-                ) : (
-                  APPS.map((a) => {
-                    const isActive = activeApp && a.id === activeApp.id;
-                    return (
-                      <div
-                        key={a.id}
-                        className="absolute inset-0 transition-opacity duration-500"
-                        style={{ opacity: isActive ? 1 : 0 }}
-                      >
-                        {a.main}
-                      </div>
-                    );
-                  })
-                )}
+                {APPS.map((a) => {
+                  const isActive = activeApp && a.id === activeApp.id;
+                  return (
+                    <div
+                      key={a.id}
+                      className="absolute inset-0 transition-opacity duration-500"
+                      style={{ opacity: isActive ? 1 : 0 }}
+                    >
+                      {a.main}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
