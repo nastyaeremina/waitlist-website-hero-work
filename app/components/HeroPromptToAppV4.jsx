@@ -82,7 +82,7 @@ function HomeEmpty() {
           Welcome back
         </div>
         <div className="text-[11px] text-white/45">
-          Your team's apps will appear here.
+          Your team&rsquo;s apps will appear here.
         </div>
         <div className="mt-1 grid grid-cols-2 gap-2">
           <div className="rounded-lg border border-dashed border-white/10 bg-white/[0.01] p-3">
