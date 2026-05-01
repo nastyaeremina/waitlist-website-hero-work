@@ -5,7 +5,11 @@ import { createPortal } from "react-dom";
 import { EmailCTA } from "./EmailCTA";
 import { HeroPromptToApp } from "./HeroPromptToApp";
 import { HeroPromptToAppV1 } from "./HeroPromptToAppV1";
+import { HeroPromptToAppV3 } from "./HeroPromptToAppV3";
 import { LogoStrip } from "./LogoStrip";
+
+const VERSIONS = ["v1", "v2", "v3"];
+const isVersion = (v) => VERSIONS.includes(v);
 
 const STORAGE_KEY = "hero-version";
 
@@ -22,8 +26,8 @@ export function Hero({
     const params = new URLSearchParams(window.location.search);
     const fromUrl = params.get("hero");
     const fromStorage = window.localStorage.getItem(STORAGE_KEY);
-    const initial = fromUrl === "v1" || fromUrl === "v2" ? fromUrl : fromStorage;
-    if (initial === "v1" || initial === "v2") setVersion(initial);
+    const initial = isVersion(fromUrl) ? fromUrl : fromStorage;
+    if (isVersion(initial)) setVersion(initial);
   }, []);
 
   const choose = (v) => {
@@ -65,7 +69,13 @@ export function Hero({
       </div>
 
       <div className="relative z-10 mt-auto w-full px-4 pt-12 md:px-6 md:pt-16 lg:px-10">
-        {version === "v1" ? <HeroPromptToAppV1 /> : <HeroPromptToApp />}
+        {version === "v1" ? (
+          <HeroPromptToAppV1 />
+        ) : version === "v3" ? (
+          <HeroPromptToAppV3 />
+        ) : (
+          <HeroPromptToApp />
+        )}
       </div>
 
       {alphaLogos && alphaLogos.length > 0 && (
@@ -99,7 +109,7 @@ function HeroVersionToggle({ version, onChange }) {
       className="flex items-center gap-1 rounded-full border border-white/15 bg-black/60 p-1 text-xs font-medium text-white/70 backdrop-blur-md"
       style={{ position: "fixed", top: 16, right: 16, zIndex: 2147483647 }}
     >
-      {["v1", "v2"].map((v) => {
+      {VERSIONS.map((v) => {
         const active = version === v;
         return (
           <button
