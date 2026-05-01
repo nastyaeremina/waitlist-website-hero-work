@@ -90,6 +90,17 @@ export function Hero({
           />
           <div className="bg-[#0a0a0a]/95 pb-2 pt-4 md:pb-3">
             <div className="mx-auto w-full max-w-[620px] px-6">
+              {alphaLabel && (
+                <p
+                  className="mb-3 text-center text-[10px] uppercase tracking-[0.18em] text-white/45"
+                  style={{
+                    fontFamily:
+                      '"ABC Diatype Mono", ui-monospace, monospace',
+                  }}
+                >
+                  {alphaLabel}
+                </p>
+              )}
               <LogoStrip logos={alphaLogos} variant="dark" />
             </div>
           </div>
