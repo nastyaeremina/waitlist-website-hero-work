@@ -392,9 +392,6 @@ export function HeroPromptToAppV3() {
               <span className="text-[11px] text-white/45">
                 Client portal preview
               </span>
-              <span className="ml-auto text-[10px] text-white/35">
-                brandmages.client
-              </span>
             </div>
 
             <div className="grid min-h-0 flex-1 grid-cols-[160px_1fr] gap-0">
