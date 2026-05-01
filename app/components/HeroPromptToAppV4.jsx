@@ -46,16 +46,6 @@ const StrokeIcon = ({ d, className = "h-3 w-3" }) => (
 const ArrowIcon = (p) => <StrokeIcon {...p} d="M3 8h10M9 4l4 4-4 4" />;
 const PlayIcon = (p) => <StrokeIcon {...p} d="M5 3.5l7 4.5-7 4.5z" />;
 
-function TrafficLights() {
-  return (
-    <div className="flex items-center gap-1.5">
-      <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
-      <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
-      <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
-    </div>
-  );
-}
-
 // ── Sub-views ─────────────────────────────────────────────────────
 
 function PanelHeader({ title, trailing }) {
@@ -77,22 +67,28 @@ function HomeEmpty() {
   return (
     <div className="flex h-full min-w-0 flex-col">
       <PanelHeader title="Home" />
-      <div className="flex flex-1 flex-col gap-3 p-4">
-        <div className="text-[13px] font-medium text-white/85">
+      <div className="flex flex-1 flex-col items-center justify-center gap-3 px-8 text-center">
+        <span
+          aria-hidden="true"
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.04] text-white/55"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M12 3l9 7-1 1-2-1.5V20H6v-9.5L4 12l-1-1 9-8z" />
+          </svg>
+        </span>
+        <div className="text-[13.5px] font-medium text-white/85">
           Welcome back
         </div>
-        <div className="text-[11px] text-white/45">
-          Your team&rsquo;s apps will appear here.
-        </div>
-        <div className="mt-1 grid grid-cols-2 gap-2">
-          <div className="rounded-lg border border-dashed border-white/10 bg-white/[0.01] p-3">
-            <div className="h-2 w-12 rounded bg-white/[0.06]" />
-            <div className="mt-2 h-2 w-20 rounded bg-white/[0.04]" />
-          </div>
-          <div className="rounded-lg border border-dashed border-white/10 bg-white/[0.01] p-3">
-            <div className="h-2 w-10 rounded bg-white/[0.06]" />
-            <div className="mt-2 h-2 w-16 rounded bg-white/[0.04]" />
-          </div>
+        <div className="max-w-[220px] text-[11px] leading-[1.5] text-white/45">
+          Apps your team builds will appear in your sidebar.
         </div>
       </div>
     </div>
@@ -381,49 +377,47 @@ export function HeroPromptToAppV4() {
       aria-hidden="true"
       className="pointer-events-none relative w-full"
     >
-      <div className="mx-auto grid w-full max-w-[1180px] grid-cols-[0.85fr_1.15fr] gap-x-6">
+      <div className="mx-auto grid w-full max-w-[1180px] grid-cols-[0.7fr_1.3fr] items-stretch gap-x-4">
         {/* Left card: App Builder ─────────────────────────────────── */}
-        <div
-          className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0a0a0a] shadow-[0_8px_30px_rgba(0,0,0,0.4)]"
-          style={{ height: "min(56vh, 540px)" }}
-        >
-          <div className="flex h-9 shrink-0 items-center gap-3 border-b border-white/[0.06] px-4">
-            <TrafficLights />
-            <span className="text-[11px] font-medium text-white/55">
-              App Builder
-            </span>
-          </div>
-
-          <div className="flex h-[calc(100%-2.25rem)] min-w-0 flex-col items-center px-6 pt-10">
-            <div className="text-[12px] font-medium text-white/55">
-              Describe your app
-            </div>
-            <div className="mt-6 w-full max-w-[360px]">
-              <div
-                className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 transition-all duration-700 ease-out"
-                style={promptFly}
-              >
-                <div className="min-h-[68px] text-[13px] leading-[1.5] text-white/85">
-                  {promptText || (
-                    <span className="text-white/30">
-                      e.g. Build a time tracker for my team
+        <div className="flex min-w-0 flex-col">
+          <span className="mb-2 pl-1 text-[10px] uppercase tracking-[0.16em] text-white/30">
+            App Builder
+          </span>
+          <div
+            className="relative flex-1 overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0a0a0a]"
+            style={{ height: "min(56vh, 540px)" }}
+          >
+            <div className="flex h-full min-w-0 flex-col items-center px-6 pt-12">
+              <div className="text-[12px] font-medium text-white/55">
+                Describe your app
+              </div>
+              <div className="mt-6 w-full max-w-[340px]">
+                <div
+                  className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 transition-all duration-700 ease-out"
+                  style={promptFly}
+                >
+                  <div className="min-h-[68px] text-[13px] leading-[1.5] text-white/85">
+                    {promptText || (
+                      <span className="text-white/30">
+                        e.g. Build a time tracker for my team
+                      </span>
+                    )}
+                    {showCursor && (
+                      <span className="ml-[1px] inline-block h-[13px] w-[1px] -translate-y-[1px] animate-pulse bg-white/85 align-middle" />
+                    )}
+                  </div>
+                  <div className="mt-3 flex items-center justify-end">
+                    <span
+                      className={[
+                        "flex h-7 w-7 items-center justify-center rounded-full transition-colors",
+                        cycleT >= TYPE_END
+                          ? "bg-white text-black"
+                          : "bg-white/10 text-white/55",
+                      ].join(" ")}
+                    >
+                      <ArrowIcon className="h-3 w-3" />
                     </span>
-                  )}
-                  {showCursor && (
-                    <span className="ml-[1px] inline-block h-[13px] w-[1px] -translate-y-[1px] animate-pulse bg-white/85 align-middle" />
-                  )}
-                </div>
-                <div className="mt-3 flex items-center justify-end">
-                  <span
-                    className={[
-                      "flex h-7 w-7 items-center justify-center rounded-full transition-colors",
-                      cycleT >= TYPE_END
-                        ? "bg-white text-black"
-                        : "bg-white/10 text-white/55",
-                    ].join(" ")}
-                  >
-                    <ArrowIcon className="h-3 w-3" />
-                  </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -431,18 +425,15 @@ export function HeroPromptToAppV4() {
         </div>
 
         {/* Right card: Client Portal ──────────────────────────────── */}
-        <div
-          className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c0c0d] shadow-[0_8px_30px_rgba(0,0,0,0.4)]"
-          style={{ height: "min(56vh, 540px)" }}
-        >
-          <div className="flex h-9 shrink-0 items-center gap-3 border-b border-white/[0.06] px-4">
-            <TrafficLights />
-            <span className="text-[11px] font-medium text-white/55">
-              Client Portal
-            </span>
-          </div>
-
-          <div className="grid h-[calc(100%-2.25rem)] min-w-0 grid-cols-[160px_1fr] gap-0">
+        <div className="flex min-w-0 flex-col">
+          <span className="mb-2 pl-1 text-[10px] uppercase tracking-[0.16em] text-white/30">
+            Client Portal
+          </span>
+          <div
+            className="relative flex-1 overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0c0c0d]"
+            style={{ height: "min(56vh, 540px)" }}
+          >
+            <div className="grid h-full min-w-0 grid-cols-[170px_1fr] gap-0">
             {/* Sidebar */}
             <div className="flex h-full min-w-0 flex-col border-r border-white/[0.05] p-3">
               <div className="mb-3 flex items-center gap-2 px-2">
@@ -490,6 +481,7 @@ export function HeroPromptToAppV4() {
               })}
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>
