@@ -330,13 +330,17 @@ function SidebarRow({ iconSrc, label, active, entryT }) {
 export function HeroPromptToAppV4() {
   const now = useCycleClock();
 
-  const totalMs = CYCLE_MS * APPS.length + RESET_PAUSE;
-  const elapsed = now % totalMs;
-  const inResetPause = elapsed >= CYCLE_MS * APPS.length;
-  const cycleIndex = inResetPause
+  // Animation plays once: cycle through all apps, then settle in a
+  // final state with every app installed plus a "Build an app" row.
+  // No infinite loop — once everything is added, the visual rests.
+  const playMs = CYCLE_MS * APPS.length;
+  const totalMs = playMs + RESET_PAUSE;
+  const elapsed = Math.min(now, totalMs);
+  const isFinal = elapsed >= playMs;
+  const cycleIndex = isFinal
     ? APPS.length - 1
     : Math.floor(elapsed / CYCLE_MS);
-  const cycleT = inResetPause ? CYCLE_MS : elapsed % CYCLE_MS;
+  const cycleT = isFinal ? CYCLE_MS : elapsed % CYCLE_MS;
   const app = APPS[cycleIndex];
 
   const clamp01 = (v) => Math.max(0, Math.min(1, v));
@@ -346,7 +350,7 @@ export function HeroPromptToAppV4() {
   const arrived = cycleT >= ARRIVE_START + 200; // brief delay after anticipate
   let installed = cycleIndex;
   if (arrived) installed = cycleIndex + 1;
-  if (inResetPause) installed = APPS.length;
+  if (isFinal) installed = APPS.length;
 
   const showHome = cycleIndex === 0 && !arrived;
   const activeApp = arrived ? app : cycleIndex > 0 ? APPS[cycleIndex - 1] : null;
@@ -500,6 +504,7 @@ export function HeroPromptToAppV4() {
                     entryT={i === cycleIndex ? entryT : null}
                   />
                 ))}
+                {isFinal && <BuildAppRow />}
               </div>
             </div>
 
@@ -530,6 +535,40 @@ export function HeroPromptToAppV4() {
     </div>
   );
 }
+
+function BuildAppRow() {
+  return (
+    <div
+      className="group pointer-events-auto relative mt-1 flex cursor-pointer items-center gap-2 overflow-hidden rounded-md border border-dashed border-white/15 px-2 py-1.5 text-[11px] leading-none text-white/55 transition-colors duration-200 hover:border-white/35 hover:text-white"
+    >
+      <span className="flex h-3 w-3 shrink-0 items-center justify-center text-current">
+        <PlusIcon className="h-3 w-3" />
+      </span>
+      <span className="truncate">Build an app</span>
+      {/* Hover shimmer — a soft white band sweeps across the row when
+          hovered, hinting at the AI-build interaction. */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent opacity-0 group-hover:translate-x-full group-hover:opacity-100"
+        style={{ transition: "transform 900ms ease-out, opacity 200ms ease-out" }}
+      />
+    </div>
+  );
+}
+
+const PlusIcon = ({ className = "h-3 w-3" }) => (
+  <svg
+    viewBox="0 0 16 16"
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.75"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M8 3v10M3 8h10" />
+  </svg>
+);
 
 const SparkleIcon = ({ className = "h-3.5 w-3.5" }) => (
   <svg
