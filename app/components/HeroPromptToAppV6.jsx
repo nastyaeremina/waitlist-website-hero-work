@@ -464,14 +464,20 @@ export function HeroPromptToAppV6() {
               {/* Sidebar */}
               <div className="flex h-full min-w-0 flex-col border-r border-white/[0.05] p-3">
                 <div className="mb-2 flex items-center gap-2 px-2">
-                  <img
-                    src="/logos/brandmages.svg"
-                    alt=""
-                    aria-hidden="true"
-                    width={20}
-                    height={20}
-                    className="h-5 w-5 shrink-0 rounded-md"
-                  />
+                  {/* The SVG ships with its own #101010 background, so on
+                      a dark sidebar it blends. Wrap it on a white tile
+                      with a small inner inset so the dark glyph reads
+                      like a branded chip rather than a hole. */}
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-white p-[2px]">
+                    <img
+                      src="/logos/brandmages.svg"
+                      alt=""
+                      aria-hidden="true"
+                      width={16}
+                      height={16}
+                      className="h-4 w-4 rounded-[3px]"
+                    />
+                  </span>
                   <span className="truncate text-[11px] font-medium text-white/85">
                     BrandMages
                   </span>
