@@ -432,7 +432,9 @@ export function HeroPromptToAppV6() {
                 placeholder rows; the slot-in motion does the work. */}
             <div className="flex h-full min-w-0 flex-col border-r border-white/[0.05] p-3">
               <div className="mb-3 flex items-center gap-2 px-2 py-2">
-                <BrandMagesMark className="h-4 w-4 shrink-0 text-white" />
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-white/[0.18] text-white">
+                  <BrandMagesMark className="h-3 w-3" />
+                </span>
                 <span className="truncate text-[12px] font-medium text-white">
                   BrandMages
                 </span>
