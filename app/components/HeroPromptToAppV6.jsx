@@ -60,6 +60,24 @@ const ArrowIcon = (p) => <StrokeIcon {...p} d="M3 8h10M9 4l4 4-4 4" />;
 const PlayIcon = (p) => <StrokeIcon {...p} d="M5 3.5l7 4.5-7 4.5z" />;
 const PlusIcon = (p) => <StrokeIcon {...p} d="M8 3v10M3 8h10" />;
 
+// BrandMages mark — three stacked rounded shelves extracted from
+// /logos/brandmages.svg (the source SVG ships with its own #101010
+// background plate that swallows the glyph on dark surfaces). Rendered
+// inline so we can paint it in any currentColor, no plate, no filter
+// hacks.
+const BrandMagesMark = ({ className = "h-4 w-4" }) => (
+  <svg
+    viewBox="0 0 24 24"
+    className={className}
+    fill="currentColor"
+    aria-hidden="true"
+  >
+    <path d="M13.69 5.067H10.31c-1.092 0-1.978.888-1.978 1.984v.007c0 1.096.886 1.984 1.978 1.984h3.38c1.092 0 1.978-.888 1.978-1.984v-.007c0-1.096-.886-1.984-1.978-1.984Z" />
+    <path d="M15.42 10.016H8.583c-1.092 0-1.978.888-1.978 1.984v.007c0 1.096.886 1.984 1.978 1.984h6.837c1.092 0 1.978-.888 1.978-1.984v-.007c0-1.096-.886-1.984-1.978-1.984Z" />
+    <path d="M17.51 14.957H6.49c-1.092 0-1.978.888-1.978 1.984v.007c0 1.096.886 1.984 1.978 1.984h11.02c1.092 0 1.978-.888 1.978-1.984v-.007c0-1.096-.886-1.984-1.978-1.984Z" />
+  </svg>
+);
+
 // ── App definitions (the three things that get built) ────────────
 
 const APPS = [
@@ -190,9 +208,6 @@ function TimeTrackerView() {
           <span className="whitespace-nowrap font-mono text-[18px] leading-none tracking-tight text-white/80">
             02:34:18
           </span>
-          <span className="ml-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/15 text-white/85">
-            <PlayIcon className="h-3 w-3" />
-          </span>
         </div>
         <div className="space-y-1.5">
           {[
@@ -297,7 +312,7 @@ function PaymentsView() {
 
 function GroupLabel({ children }) {
   return (
-    <div className="px-2 pb-2 pt-4 text-[10px] text-white/30">
+    <div className="px-2 pb-2 pt-3 text-[10px] text-white/30">
       {children}
     </div>
   );
@@ -472,21 +487,12 @@ export function HeroPromptToAppV6() {
             <div className="grid min-h-0 flex-1 grid-cols-[170px_1fr] gap-0">
               {/* Sidebar */}
               <div className="flex h-full min-w-0 flex-col border-r border-white/[0.05] p-3">
-                <div className="mb-2 flex items-center gap-2 px-2">
-                  {/* The SVG ships with its own #101010 background, so on
-                      a dark sidebar it blends. Wrap it on a white tile
-                      with a small inner inset so the dark glyph reads
-                      like a branded chip rather than a hole. */}
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-white p-[2px]">
-                    <img
-                      src="/logos/brandmages.svg"
-                      alt=""
-                      aria-hidden="true"
-                      width={16}
-                      height={16}
-                      className="h-4 w-4 rounded-[3px]"
-                    />
-                  </span>
+                <div className="flex items-center gap-2 px-2 py-2">
+                  {/* Inline BrandMages mark (just the three stacked
+                      shelves, no plate) tinted to match the sidebar
+                      type so the brand row reads as a quiet header
+                      instead of a stamp. */}
+                  <BrandMagesMark className="h-4 w-4 shrink-0 text-white/85" />
                   <span className="truncate text-[11px] font-medium text-white/85">
                     BrandMages
                   </span>
