@@ -58,6 +58,7 @@ const StrokeIcon = ({ d, className = "h-3 w-3" }) => (
 );
 const ArrowIcon = (p) => <StrokeIcon {...p} d="M3 8h10M9 4l4 4-4 4" />;
 const PlayIcon = (p) => <StrokeIcon {...p} d="M5 3.5l7 4.5-7 4.5z" />;
+const PlusIcon = (p) => <StrokeIcon {...p} d="M8 3v10M3 8h10" />;
 
 // ── App definitions (the three things that get built) ────────────
 
@@ -293,6 +294,24 @@ function GroupLabel({ children }) {
   );
 }
 
+// Placeholder row at the bottom of "Your apps" — telegraphs where the
+// app being typed about will land. Shimmers while the prompt is being
+// composed so the typing on the left and the destination on the right
+// read as one connected motion. Hidden once every app slot is filled.
+function AddAppRow({ shimmering }) {
+  return (
+    <div className="relative flex items-center gap-2 overflow-hidden rounded-md border border-dashed border-white/15 px-2 py-1.5 text-[11px] leading-none text-white/45">
+      <span className="relative z-[1] flex h-3 w-3 shrink-0 items-center justify-center">
+        <PlusIcon className="h-3 w-3" />
+      </span>
+      <span className="relative z-[1] truncate">Add an app</span>
+      {shimmering && (
+        <span aria-hidden="true" className="v5-build-shimmer" />
+      )}
+    </div>
+  );
+}
+
 function SidebarRow({ iconSrc, label, active, muted, entryT }) {
   // entryT: 0..1 over the fly-in window (null when settled). The new
   // row pops in with a brief overshoot + soft glow so the eye knows
@@ -467,11 +486,6 @@ export function HeroPromptToAppV6() {
 
                 <GroupLabel>Your apps</GroupLabel>
                 <div className="space-y-0.5">
-                  {installed === 0 && (
-                    <div className="px-2 py-1 text-[10px] italic leading-[1.4] text-white/25">
-                      Apps you build appear here
-                    </div>
-                  )}
                   {APPS.slice(0, installed).map((a, i) => (
                     <SidebarRow
                       key={a.id}
@@ -481,6 +495,11 @@ export function HeroPromptToAppV6() {
                       entryT={i === cycleIndex ? entryT : null}
                     />
                   ))}
+                  {installed < APPS.length && (
+                    <AddAppRow
+                      shimmering={cycleT >= TYPE_START && cycleT < FLY_END}
+                    />
+                  )}
                 </div>
               </div>
 
