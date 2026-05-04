@@ -54,6 +54,26 @@ const StrokeIcon = ({ d, className = "h-3 w-3" }) => (
 );
 const ArrowIcon = (p) => <StrokeIcon {...p} d="M3 8h10M9 4l4 4-4 4" />;
 
+// Classic macOS-style pointer: white fill with a thin dark outline so
+// it stays legible on either light or dark surfaces. The tip is at
+// (0, 0) of the viewBox so positioning math can place the tip exactly
+// on the target — the rest of the glyph trails down-right.
+const CursorIcon = ({ className = "h-[18px] w-[18px]" }) => (
+  <svg
+    viewBox="0 0 16 16"
+    className={className}
+    aria-hidden="true"
+  >
+    <path
+      d="M0.6 0.6 L0.6 11.5 L3.7 8.6 L6.0 13.4 L8.0 12.5 L5.7 7.7 L10 7.7 Z"
+      fill="white"
+      stroke="rgba(0,0,0,0.65)"
+      strokeWidth="0.7"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 // BrandMages mark — three stacked rounded shelves taken from
 // /logos/brandmages-mark.svg. Inlined so the symbol can be painted in
 // any currentColor and never drags along a background plate.
@@ -361,27 +381,62 @@ export function HeroPromptToAppV6() {
   const promptText = typed(app.prompt, cycleT);
   const showCursor = cycleT >= TYPE_START && cycleT < SEND;
 
-  // Send-button press animation. From SEND, the button quickly scales
-  // down, flashes brand green, and pulses a ring outward — a visible
-  // "click registered" beat — then settles back to scale 1 in ~240ms.
-  // pressP is 0..1 across that window; null otherwise.
-  const PRESS_MS = 240;
+  // Send-button press animation. From SEND the button does a smooth
+  // sin-pulse scale dip, brightens its white surface, and pulses a
+  // soft white ring outward — a "click registered" beat without any
+  // brand-green flash (which read as distracting). Curves are eased
+  // both ways so the press feels mechanical, not a hard blink.
+  const PRESS_MS = 320;
   const pressP =
     cycleT >= SEND && cycleT < SEND + PRESS_MS
       ? (cycleT - SEND) / PRESS_MS
       : null;
-  // Scale: 0.84 at the start of the press, then eases back to 1 by 45%
-  // through the window. Keeping the rest of the window at 1 lets the
-  // ring-pulse continue without the icon visibly bouncing twice.
+  // Smooth in-out dip: scale 1 → 0.86 at the midpoint → 1 at the end.
+  // sin(πx) returns 0 at the ends and 1 at 0.5, so the dip eases on
+  // the way down and back up.
   const pressScale =
-    pressP === null
-      ? 1
-      : pressP < 0.45
-      ? 0.84 + (pressP / 0.45) * 0.16
-      : 1;
-  // Ring pulse: fades from full to 0 across the window.
+    pressP === null ? 1 : 1 - 0.14 * Math.sin(pressP * Math.PI);
+  // Ring pulse: starts thick + visible, then both expands and fades
+  // out so it reads as a single shockwave rather than a sustained ring.
   const pressRing = pressP === null ? 0 : 1 - pressP;
   const ready = cycleT >= TYPE_END;
+
+  // Cursor — a small pointer that approaches the button, clicks it at
+  // SEND, then exits. Three phases: approach (fades in + slides up to
+  // the button from below-right), click (sticks to the button through
+  // the press window), exit (fades + slides away). The tip of the
+  // cursor SVG is at viewBox (0,0), so the offsets below place that
+  // exact tip on the button center.
+  const APPROACH_MS = 600;
+  const EXIT_MS = 320;
+  const approachStart = SEND - APPROACH_MS;
+  const exitStart = SEND + PRESS_MS;
+  const exitEnd = exitStart + EXIT_MS;
+
+  let cursorOpacity = 0;
+  // Offset from the cursor's resting position (tip on the button
+  // center). Positive x/y means below-right of the resting position.
+  let cursorDx = 0;
+  let cursorDy = 0;
+  if (cycleT >= approachStart && cycleT < SEND) {
+    // Slide in from below-right with an ease-out curve.
+    const p = (cycleT - approachStart) / APPROACH_MS;
+    const eased = 1 - Math.pow(1 - p, 2);
+    cursorOpacity = eased;
+    cursorDx = (1 - eased) * 22;
+    cursorDy = (1 - eased) * 16;
+  } else if (pressP !== null) {
+    // Stays on the button through the click; small downward nudge at
+    // the start that eases back as the button springs out.
+    cursorOpacity = 1;
+    cursorDy = 1.5 * Math.sin(pressP * Math.PI);
+  } else if (cycleT >= exitStart && cycleT < exitEnd) {
+    // Fade out + drift down-right.
+    const p = (cycleT - exitStart) / EXIT_MS;
+    cursorOpacity = 1 - p;
+    cursorDx = p * 8;
+    cursorDy = p * 6;
+  }
 
   // Sidebar fill: how many of APPS have been installed so far.
   let installed = cycleIndex;
@@ -452,28 +507,28 @@ export function HeroPromptToAppV6() {
                       <span className="ml-[1px] inline-block h-[13px] w-[1px] -translate-y-[1px] animate-pulse bg-white/85 align-middle" />
                     )}
                   </div>
-                  <div className="mt-2 flex items-center justify-end">
-                    {/* Press animation runs at SEND: scale-down +
-                        brand-green flash + outward ring-pulse so the
-                        click moment is unmistakable. After the window
-                        ends, the button settles to its "ready" state
-                        until the cycle resets. */}
+                  <div className="relative mt-2 flex items-center justify-end">
+                    {/* Press animation runs at SEND: smooth sin-pulse
+                        scale dip + a brighter white surface + soft
+                        white ring pulse. No brand-green flash — that
+                        read as a distracting blink. The transition
+                        line eases bg/color across state changes so
+                        typing → ready → press → ready is continuous
+                        instead of stepped. */}
                     <span
                       style={{
                         transform: `scale(${pressScale})`,
                         boxShadow:
                           pressRing > 0
-                            ? `0 0 0 ${4 + pressRing * 4}px rgba(217, 237, 146, ${pressRing * 0.28})`
+                            ? `0 0 0 ${4 + pressRing * 6}px rgba(255, 255, 255, ${pressRing * 0.18})`
                             : undefined,
                         transition:
-                          pressP === null
-                            ? "transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1), background-color 250ms, color 250ms"
-                            : undefined,
+                          "background-color 220ms ease, color 220ms ease, box-shadow 240ms ease",
                       }}
                       className={[
                         "flex h-6 w-6 items-center justify-center rounded-full",
                         pressP !== null
-                          ? "bg-[#D9ED92] text-[#101010]"
+                          ? "bg-white/[0.55] text-white"
                           : ready
                           ? "bg-white/25 text-white/95"
                           : "bg-white/10 text-white/55",
@@ -481,6 +536,35 @@ export function HeroPromptToAppV6() {
                     >
                       <ArrowIcon className="h-3 w-3" />
                     </span>
+
+                    {/* Cursor — flies in from below-right, "clicks" the
+                        button at SEND, then drifts away. Positioned so
+                        the cursor SVG's tip (viewBox 0,0) sits on the
+                        button center: the wrapper's right/top values
+                        center on the 24px button (right ~12px from the
+                        row's right edge, then nudged in by half the
+                        cursor's width) and the dx/dy offsets animate
+                        relative to that resting position. */}
+                    {cursorOpacity > 0 && (
+                      <span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute"
+                        style={{
+                          opacity: cursorOpacity,
+                          // Tip of the cursor lands ~2px inside the
+                          // button's top-left so the click reads as
+                          // "on the button" rather than dead-center
+                          // (which would hide the tip behind the icon).
+                          right: "16px",
+                          top: "8px",
+                          transform: `translate(${cursorDx}px, ${cursorDy}px)`,
+                          filter:
+                            "drop-shadow(0 1px 2px rgba(0,0,0,0.45))",
+                        }}
+                      >
+                        <CursorIcon />
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
