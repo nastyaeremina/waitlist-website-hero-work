@@ -288,7 +288,7 @@ function PaymentsView() {
 
 function GroupLabel({ children }) {
   return (
-    <div className="px-2 pb-1 pt-2 text-[10px] text-white/30">
+    <div className="px-2 pb-2 pt-4 text-[10px] text-white/30">
       {children}
     </div>
   );
@@ -300,7 +300,7 @@ function GroupLabel({ children }) {
 // read as one connected motion. Hidden once every app slot is filled.
 function AddAppRow({ shimmering }) {
   return (
-    <div className="relative flex items-center gap-2 overflow-hidden rounded-md border border-dashed border-white/15 px-2 py-1.5 text-[11px] leading-none text-white/45">
+    <div className="relative flex items-center gap-2 overflow-hidden rounded-md border border-dashed border-white/15 px-2 py-2 text-[11px] leading-none text-white/45">
       <span className="relative z-[1] flex h-3 w-3 shrink-0 items-center justify-center">
         <PlusIcon className="h-3 w-3" />
       </span>
@@ -349,7 +349,7 @@ function SidebarRow({ iconSrc, label, active, muted, entryT }) {
   return (
     <div
       className={[
-        "flex items-center gap-2 rounded-md px-2 py-1.5 text-[11px] leading-none transition-colors duration-300",
+        "flex items-center gap-2 rounded-md px-2 py-2 text-[11px] leading-none transition-colors duration-300",
         active
           ? "bg-white/[0.07] text-white/95"
           : muted
@@ -484,7 +484,7 @@ export function HeroPromptToAppV6() {
                 </div>
 
                 <GroupLabel>Built-in</GroupLabel>
-                <div className="space-y-0.5">
+                <div className="space-y-1">
                   {BUILT_IN.map((b) => (
                     <SidebarRow
                       key={b.id}
@@ -496,7 +496,7 @@ export function HeroPromptToAppV6() {
                 </div>
 
                 <GroupLabel>Your apps</GroupLabel>
-                <div className="space-y-0.5">
+                <div className="space-y-1">
                   {APPS.slice(0, installed).map((a, i) => (
                     <SidebarRow
                       key={a.id}
