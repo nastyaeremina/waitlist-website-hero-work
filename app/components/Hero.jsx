@@ -45,11 +45,12 @@ export function Hero({
 
   return (
     <>
+      {/* Section: fixed 100vh-ish height + bleed only at lg+. On
+          mobile the section grows to its content so the hero visual
+          sits inline right below the CTA instead of being pushed to
+          the bottom of an empty viewport-tall band by mt-auto. */}
       <section
-        className="relative overflow-hidden flex flex-col"
-        style={{
-          height: "min(100vh, 1080px)",
-        }}
+        className="relative overflow-hidden flex flex-col lg:h-[min(100vh,1080px)]"
       >
         <HeroVersionToggle version={version} onChange={choose} />
 
@@ -72,14 +73,12 @@ export function Hero({
           <EmailCTA />
         </div>
 
+        {/* Visual wrapper. On mobile: no mt-auto (just sits inline
+            after the CTA), no mask (the bottom-fade was tied to the
+            bleed that only made sense in a 100vh section), tighter
+            top padding. On lg+: the original bleed treatment. */}
         <div
-          className="relative z-10 mt-auto w-full overflow-hidden px-4 pt-12 md:px-6 md:pt-16 lg:px-10"
-          style={{
-            WebkitMaskImage:
-              "linear-gradient(to bottom, black 0%, black 45%, rgba(0,0,0,0.7) 70%, rgba(0,0,0,0.25) 88%, transparent 100%)",
-            maskImage:
-              "linear-gradient(to bottom, black 0%, black 45%, rgba(0,0,0,0.7) 70%, rgba(0,0,0,0.25) 88%, transparent 100%)",
-          }}
+          className="hero-visual-wrap relative z-10 w-full overflow-hidden px-4 pt-8 md:px-6 md:pt-12 lg:mt-auto lg:px-10 lg:pt-16"
         >
           {version === "v1" ? (
             <HeroPromptToAppV1 />

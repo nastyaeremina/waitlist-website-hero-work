@@ -361,24 +361,11 @@ export function HeroPromptToAppV6() {
   const promptText = typed(app.prompt, cycleT);
   const showCursor = cycleT >= TYPE_START && cycleT < SEND;
 
-  // Send-button press animation. From SEND the button does a smooth
-  // sin-pulse scale dip, brightens its white surface, and pulses a
-  // soft white ring outward — a "click registered" beat without any
-  // brand-green flash (which read as distracting). Curves are eased
-  // both ways so the press feels mechanical, not a hard blink.
-  const PRESS_MS = 320;
-  const pressP =
-    cycleT >= SEND && cycleT < SEND + PRESS_MS
-      ? (cycleT - SEND) / PRESS_MS
-      : null;
-  // Smooth in-out dip: scale 1 → 0.86 at the midpoint → 1 at the end.
-  // sin(πx) returns 0 at the ends and 1 at 0.5, so the dip eases on
-  // the way down and back up.
-  const pressScale =
-    pressP === null ? 1 : 1 - 0.14 * Math.sin(pressP * Math.PI);
-  // Ring pulse: starts thick + visible, then both expands and fades
-  // out so it reads as a single shockwave rather than a sustained ring.
-  const pressRing = pressP === null ? 0 : 1 - pressP;
+  // Send-button state: just disabled → active at TYPE_END. The button
+  // brightens (and the icon along with it) so it reads as "armed" once
+  // the prompt finishes typing. No click/press animation — that beat
+  // read as distracting; the bg transition alone carries enough of a
+  // signal that the prompt is going through.
   const ready = cycleT >= TYPE_END;
 
   // Sidebar fill: how many of APPS have been installed so far.
@@ -423,20 +410,21 @@ export function HeroPromptToAppV6() {
           separation is carried by the vertical divider only, so the
           card reads as part of the dark chapter rather than a lifted
           one-off grey panel that doesn't appear anywhere else. */}
-      {/* Card layout is responsive:
-          - <lg: composer-only. The portal half is hidden so the hero
-            stays compact on phones — there isn't enough horizontal
-            room for a 2-pane portal preview to read at narrow widths,
-            and stacking it pushed the card too tall.
+      {/* Layout is responsive:
+          - <lg: just the composer, no card frame. The bordered card
+            on mobile read as an empty container around a single
+            input — like a UI mistake — so on phones we render the
+            composer directly with no surrounding border, bg, or
+            rounded corners.
           - lg+: original 1100×min(50vh,480px) two-column card with
             composer on the left and BrandMages portal on the right. */}
       <div
-        className="relative mx-auto w-full max-w-[1100px] overflow-hidden rounded-t-2xl border border-white/[0.11] bg-[#101010] shadow-[0_1px_0_rgba(255,255,255,0.04)_inset] h-[260px] lg:h-[min(50vh,480px)]"
+        className="relative mx-auto w-full max-w-[1100px] overflow-hidden lg:h-[min(50vh,480px)] lg:rounded-t-2xl lg:border lg:border-white/[0.11] lg:bg-[#101010] lg:shadow-[0_1px_0_rgba(255,255,255,0.04)_inset]"
       >
-        <div className="flex h-full flex-col lg:grid lg:grid-cols-[1fr_1.25fr] lg:gap-0">
-          {/* Composer: full card on mobile, left column at lg+. */}
-          <div className="relative flex h-full min-w-0 flex-col bg-[#101010] lg:border-r lg:border-white/[0.09]">
-            <div className="flex min-w-0 flex-1 flex-col items-center px-6 pt-10 md:pt-14 lg:pt-16">
+        <div className="flex flex-col lg:grid lg:h-full lg:grid-cols-[1fr_1.25fr] lg:gap-0">
+          {/* Composer: free-standing on mobile, left column at lg+. */}
+          <div className="relative flex min-w-0 flex-col lg:h-full lg:border-r lg:border-white/[0.09] lg:bg-[#101010]">
+            <div className="flex min-w-0 flex-1 flex-col items-center px-6 lg:pt-16">
               {/* Composer width: wider on mobile/tablet (where this is
                   the whole hero visual and a 320px box would leave a
                   big empty band on either side) and back to the
@@ -468,19 +456,12 @@ export function HeroPromptToAppV6() {
                         instead of stepped. */}
                     <span
                       style={{
-                        transform: `scale(${pressScale})`,
-                        boxShadow:
-                          pressRing > 0
-                            ? `0 0 0 ${4 + pressRing * 6}px rgba(255, 255, 255, ${pressRing * 0.18})`
-                            : undefined,
                         transition:
-                          "background-color 220ms ease, color 220ms ease, box-shadow 240ms ease",
+                          "background-color 220ms ease, color 220ms ease",
                       }}
                       className={[
                         "flex h-6 w-6 items-center justify-center rounded-full",
-                        pressP !== null
-                          ? "bg-white/[0.55] text-white"
-                          : ready
+                        ready
                           ? "bg-white/25 text-white/95"
                           : "bg-white/10 text-white/55",
                       ].join(" ")}
