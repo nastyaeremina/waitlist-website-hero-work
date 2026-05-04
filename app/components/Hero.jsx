@@ -8,9 +8,10 @@ import { HeroPromptToAppV1 } from "./HeroPromptToAppV1";
 import { HeroPromptToAppV3 } from "./HeroPromptToAppV3";
 import { HeroPromptToAppV4 } from "./HeroPromptToAppV4";
 import { HeroPromptToAppV5 } from "./HeroPromptToAppV5";
+import { HeroPromptToAppV6 } from "./HeroPromptToAppV6";
 import { LogoStrip } from "./LogoStrip";
 
-const VERSIONS = ["v1", "v2", "v3", "v4", "v5"];
+const VERSIONS = ["v1", "v2", "v3", "v4", "v5", "v6"];
 const isVersion = (v) => VERSIONS.includes(v);
 
 const STORAGE_KEY = "hero-version";
@@ -88,6 +89,8 @@ export function Hero({
             <HeroPromptToAppV4 />
           ) : version === "v5" ? (
             <HeroPromptToAppV5 />
+          ) : version === "v6" ? (
+            <HeroPromptToAppV6 />
           ) : (
             <HeroPromptToApp />
           )}
