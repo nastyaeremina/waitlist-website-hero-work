@@ -374,17 +374,21 @@ export function HeroPromptToAppV6() {
       ? 1
       : null;
 
-  // Building shimmer — kicks in the moment SEND fires and ramps out as
-  // the real row/main fades in. Sidebar shimmer ends earlier than main
-  // shimmer because the row visually "lands" first; the main view
-  // crossfade trails by ~half the FLY window.
+  // Building shimmer — telegraphs that the new app is being assembled
+  // between SEND and FLY_END. Sidebar slot opacity tracks entryT (the
+  // shimmer hands off to the real row exactly as it pops in); the main
+  // canvas opacity rides the same window so the two beats stay in sync.
   let buildShimmerSidebar = 0;
   let buildShimmerMain = 0;
-  if (cycleT >= SEND) {
-    const winSidebar = (FLY_END - SEND) * 0.7;
-    const winMain = FLY_END - SEND;
-    buildShimmerSidebar = Math.max(0, 1 - (cycleT - SEND) / winSidebar);
-    buildShimmerMain = Math.max(0, 1 - (cycleT - SEND) / winMain);
+  if (cycleT >= SEND && cycleT < FLY_END) {
+    const p = (cycleT - SEND) / (FLY_END - SEND);
+    // Quick fade-in (200ms-equivalent ≈ first 13% of the window) then a
+    // gentle ease-out so the shimmer is gone before the row scale lands
+    // at 1 — no visual collision between placeholder and real content.
+    const fadeIn = Math.min(1, p / 0.13);
+    const fadeOut = 1 - Math.max(0, (p - 0.55) / 0.45);
+    buildShimmerSidebar = Math.max(0, fadeIn * fadeOut);
+    buildShimmerMain = Math.max(0, fadeIn * fadeOut);
   }
 
   // Active app in main panel: the latest one that's been sent.
@@ -393,13 +397,14 @@ export function HeroPromptToAppV6() {
 
   return (
     <div aria-hidden="true" className="pointer-events-none relative w-full">
-      {/* Single combined card. The two halves still read as distinct
-          environments via internal bg shift (#0a0a0a builder vs.
-          #0c0c0d portal) plus a thin divider, but they share one
-          frame so the whole visual stays compact and on-brand for
-          the dark page (no washed-out lifted greys). */}
+      {/* Single combined card on the canonical site dark (#101010 —
+          same token as --color-bg, the page background, and the dark
+          spacers between sections). Both halves share that surface;
+          separation is carried by the vertical divider only, so the
+          card reads as part of the dark chapter rather than a lifted
+          one-off grey panel that doesn't appear anywhere else. */}
       <div
-        className="relative mx-auto w-full max-w-[1100px] overflow-hidden rounded-t-2xl border border-white/[0.11] bg-[#16171a] shadow-[0_1px_0_rgba(255,255,255,0.04)_inset]"
+        className="relative mx-auto w-full max-w-[1100px] overflow-hidden rounded-t-2xl border border-white/[0.11] bg-[#101010] shadow-[0_1px_0_rgba(255,255,255,0.04)_inset]"
         style={{ height: "min(50vh, 480px)" }}
       >
         <div className="grid h-full grid-cols-[1fr_1.25fr] gap-0">
@@ -407,7 +412,7 @@ export function HeroPromptToAppV6() {
               color as the right portal — Linear-style, one unified
               card bg with the vertical divider doing the separation
               instead of a panel-bg shift. */}
-          <div className="relative flex h-full min-w-0 flex-col border-r border-white/[0.09] bg-[#16171a]">
+          <div className="relative flex h-full min-w-0 flex-col border-r border-white/[0.09] bg-[#101010]">
             <div className="flex min-w-0 flex-1 flex-col items-center px-6 pt-14 md:pt-16">
               <div className="w-full max-w-[320px]">
                 <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] px-3 py-2.5">
@@ -442,7 +447,7 @@ export function HeroPromptToAppV6() {
               and the outer card — Linear-style flat dark — so the seam
               is carried by the vertical divider, not by stacking
               different shades of near-black against each other. */}
-          <div className="relative flex h-full min-w-0 flex-col bg-[#16171a]">
+          <div className="relative flex h-full min-w-0 flex-col bg-[#101010]">
             <div className="grid h-full min-h-0 grid-cols-[180px_1fr] gap-0">
               {/* Sidebar — flat list: BrandMages, Home, Messages,
                   installed apps. The slot-in motion carries the
