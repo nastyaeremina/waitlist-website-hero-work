@@ -361,6 +361,28 @@ export function HeroPromptToAppV6() {
   const promptText = typed(app.prompt, cycleT);
   const showCursor = cycleT >= TYPE_START && cycleT < SEND;
 
+  // Send-button press animation. From SEND, the button quickly scales
+  // down, flashes brand green, and pulses a ring outward — a visible
+  // "click registered" beat — then settles back to scale 1 in ~240ms.
+  // pressP is 0..1 across that window; null otherwise.
+  const PRESS_MS = 240;
+  const pressP =
+    cycleT >= SEND && cycleT < SEND + PRESS_MS
+      ? (cycleT - SEND) / PRESS_MS
+      : null;
+  // Scale: 0.84 at the start of the press, then eases back to 1 by 45%
+  // through the window. Keeping the rest of the window at 1 lets the
+  // ring-pulse continue without the icon visibly bouncing twice.
+  const pressScale =
+    pressP === null
+      ? 1
+      : pressP < 0.45
+      ? 0.84 + (pressP / 0.45) * 0.16
+      : 1;
+  // Ring pulse: fades from full to 0 across the window.
+  const pressRing = pressP === null ? 0 : 1 - pressP;
+  const ready = cycleT >= TYPE_END;
+
   // Sidebar fill: how many of APPS have been installed so far.
   let installed = cycleIndex;
   if (sent) installed = cycleIndex + 1;
@@ -416,7 +438,11 @@ export function HeroPromptToAppV6() {
             <div className="flex min-w-0 flex-1 flex-col items-center px-6 pt-14 md:pt-16">
               <div className="w-full max-w-[320px]">
                 <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] px-3 py-2.5">
-                  <div className="text-[13px] leading-[1.5] text-white/85">
+                  {/* min-h reserves space for the longest wrapped
+                      prompt (2 lines at this font/width across all
+                      three apps in the cycle) so the field doesn't
+                      visibly grow while characters type in. */}
+                  <div className="min-h-[42px] text-[13px] leading-[1.5] text-white/85">
                     {promptText || (
                       <span className="text-white/30">
                         Build a time tracker for my team…
@@ -427,10 +453,28 @@ export function HeroPromptToAppV6() {
                     )}
                   </div>
                   <div className="mt-2 flex items-center justify-end">
+                    {/* Press animation runs at SEND: scale-down +
+                        brand-green flash + outward ring-pulse so the
+                        click moment is unmistakable. After the window
+                        ends, the button settles to its "ready" state
+                        until the cycle resets. */}
                     <span
+                      style={{
+                        transform: `scale(${pressScale})`,
+                        boxShadow:
+                          pressRing > 0
+                            ? `0 0 0 ${4 + pressRing * 4}px rgba(217, 237, 146, ${pressRing * 0.28})`
+                            : undefined,
+                        transition:
+                          pressP === null
+                            ? "transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1), background-color 250ms, color 250ms"
+                            : undefined,
+                      }}
                       className={[
-                        "flex h-6 w-6 items-center justify-center rounded-full transition-colors duration-300",
-                        cycleT >= TYPE_END
+                        "flex h-6 w-6 items-center justify-center rounded-full",
+                        pressP !== null
+                          ? "bg-[#D9ED92] text-[#101010]"
+                          : ready
                           ? "bg-white/25 text-white/95"
                           : "bg-white/10 text-white/55",
                       ].join(" ")}
