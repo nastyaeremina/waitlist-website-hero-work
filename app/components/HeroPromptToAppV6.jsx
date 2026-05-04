@@ -386,13 +386,14 @@ export function HeroPromptToAppV6() {
           frame so the whole visual stays compact and on-brand for
           the dark page (no washed-out lifted greys). */}
       <div
-        className="relative mx-auto w-full max-w-[1100px] overflow-hidden rounded-t-2xl border border-white/[0.07] bg-[#0e0e0f]"
+        className="relative mx-auto w-full max-w-[1100px] overflow-hidden rounded-t-2xl border border-white/[0.11] bg-[#16171a] shadow-[0_1px_0_rgba(255,255,255,0.04)_inset]"
         style={{ height: "min(50vh, 480px)" }}
       >
         <div className="grid h-full grid-cols-[1fr_1.25fr] gap-0">
-          {/* Left: prompt composer. No eyebrow header. The composer
-              sits centered so it reads as the focal point. */}
-          <div className="relative flex h-full min-w-0 flex-col border-r border-white/[0.06] bg-[#0a0a0a]">
+          {/* Left: prompt composer. No eyebrow header. Slightly darker
+              than the outer card so the two halves read as adjacent
+              surfaces (builder ↔ portal). */}
+          <div className="relative flex h-full min-w-0 flex-col border-r border-white/[0.09] bg-[#0e0f12]">
             <div className="flex min-w-0 flex-1 flex-col items-center px-6 pt-14 md:pt-16">
               <div className="w-full max-w-[320px]">
                 <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] px-3 py-2.5">
@@ -432,7 +433,7 @@ export function HeroPromptToAppV6() {
                   integration story; no section headers needed. */}
               <div className="flex h-full min-w-0 flex-col border-r border-white/[0.05] p-3">
                 <div className="mb-3 flex items-center gap-2 px-2 py-2">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-white/[0.18] text-white">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-white/[0.08] text-white/85">
                     <BrandMagesMark className="h-3 w-3" />
                   </span>
                   <span className="truncate text-[12px] font-medium text-white/90">
