@@ -464,9 +464,14 @@ export function HeroPromptToAppV6() {
               {/* Sidebar */}
               <div className="flex h-full min-w-0 flex-col border-r border-white/[0.05] p-3">
                 <div className="mb-2 flex items-center gap-2 px-2">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-white/10 text-[10px] font-semibold text-white/85">
-                    B
-                  </span>
+                  <img
+                    src="/logos/brandmages.svg"
+                    alt=""
+                    aria-hidden="true"
+                    width={20}
+                    height={20}
+                    className="h-5 w-5 shrink-0 rounded-md"
+                  />
                   <span className="truncate text-[11px] font-medium text-white/85">
                     BrandMages
                   </span>
