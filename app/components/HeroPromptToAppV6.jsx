@@ -520,16 +520,17 @@ export function HeroPromptToAppV6() {
                 })}
                 {/* Building shimmer over the main canvas. Reads as
                     "the new app is being assembled here" while the
-                    sidebar row is still flying in. Fades out as the
-                    real app view crossfades up. */}
+                    sidebar row is still flying in. Spans the full
+                    panel (inset-0, rounded-none) so the sweep reaches
+                    the outer card's right border instead of stopping
+                    12px short, which read as truncated. The card's
+                    own border carries the framing. */}
                 {buildShimmerMain > 0 && (
                   <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-3"
+                    className="hpv6-build-shimmer pointer-events-none absolute inset-0"
                     style={{ opacity: buildShimmerMain }}
-                  >
-                    <div className="hpv6-build-shimmer h-full w-full rounded-lg" />
-                  </div>
+                  />
                 )}
               </div>
             </div>
