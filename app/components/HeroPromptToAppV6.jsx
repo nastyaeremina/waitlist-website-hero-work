@@ -387,13 +387,13 @@ export function HeroPromptToAppV6() {
           the dark page (no washed-out lifted greys). */}
       <div
         className="relative mx-auto w-full max-w-[1100px] overflow-hidden rounded-t-2xl border border-white/[0.07] bg-[#0e0e0f]"
-        style={{ height: "min(56vh, 540px)" }}
+        style={{ height: "min(50vh, 480px)" }}
       >
         <div className="grid h-full grid-cols-[1fr_1.25fr] gap-0">
           {/* Left: prompt composer. No eyebrow header. The composer
               sits centered so it reads as the focal point. */}
           <div className="relative flex h-full min-w-0 flex-col border-r border-white/[0.06] bg-[#0a0a0a]">
-            <div className="flex min-w-0 flex-1 flex-col items-center justify-center px-6">
+            <div className="flex min-w-0 flex-1 flex-col items-center px-6 pt-14 md:pt-16">
               <div className="w-full max-w-[320px]">
                 <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] px-3 py-2.5">
                   <div className="text-[13px] leading-[1.5] text-white/85">
