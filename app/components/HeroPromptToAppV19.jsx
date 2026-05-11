@@ -1,14 +1,9 @@
 "use client";
 
-// HeroPromptToAppV18 — dark hero variant with v16-style client portal.
-//
-// Layout: single bordered frame on the dark hero. Top: tab strip (one
-// tab per app, clickable, with a progress underbar tracking the build
-// cycle). Body: composer left (dark bg, white text) + portal preview
-// right (light card with sidebar + content). The portal mirrors the
-// v15/v16 client portal — full rich views, sidebar that progressively
-// accumulates installed apps with a shimmer on the newest row, and a
-// skeleton loading state while the app is "generating".
+// HeroPromptToAppV19 — off-white hero variant. Identical client portal
+// + composer to v18; the surrounding hero is a cream off-white instead
+// of #101010, so the white card layers sit on a soft background rather
+// than contrasting against dark.
 
 import { useEffect, useState } from "react";
 
@@ -130,7 +125,7 @@ function typed(text, t) {
 // hero, so text/borders stay dark for legibility. Mirrors v15 views.
 
 const CARD =
-  "rounded border border-[#101010]/[0.10] bg-white shadow-[0_1px_2px_rgba(16,16,16,0.04)]";
+  "rounded border border-[#101010]/[0.10] bg-[#FEFDF8] shadow-[0_1px_2px_rgba(16,16,16,0.04)]";
 
 function HomeView() {
   const updates = [
@@ -158,8 +153,6 @@ function HomeView() {
           Here&apos;s the latest from BrandMages
         </div>
       </div>
-
-      <div className="h-[70px] w-full rounded-[6px] border border-[#101010]/[0.08] bg-white lg:h-[120px]" />
 
       <div className="flex flex-col gap-1.5">
         <div className="px-1 text-[11px] text-[#101010]/30">Latest updates</div>
@@ -397,7 +390,7 @@ function SidebarRow({ iconSrc, iconClass, label, active, muted, style }) {
 
 // ── Component ────────────────────────────────────────────────────
 
-export function HeroPromptToAppV18() {
+export function HeroPromptToAppV19() {
   const now = useCycleClock();
   // Clicking a tab anchors the cycle to start fresh at that app's
   // running beat — the cycle keeps progressing from there instead of
@@ -475,10 +468,8 @@ export function HeroPromptToAppV18() {
       <div
         className="relative w-full overflow-hidden rounded-[16px] border"
         style={{
-          backgroundColor: "#FFFFFF",
+          backgroundColor: "#FBFAF5",
           borderColor: "rgba(16,16,16,0.10)",
-          boxShadow:
-            "0 1px 0 rgba(255,255,255,0.8) inset, 0 24px 60px -28px rgba(0,0,0,0.55)",
         }}
       >
         {/* ── Top tab strip ─────────────────────────────────────── */}
@@ -579,9 +570,12 @@ export function HeroPromptToAppV18() {
           <div className="relative">
             <div
               className="overflow-hidden rounded-[10px] border border-[#101010]/[0.10]"
-              style={{ background: "#FFFFFF" }}
+              style={{ background: "#FBFAF5" }}
             >
-              <div className="flex h-7 shrink-0 items-center gap-1.5 border-b border-[#101010]/[0.06] bg-white px-3">
+              <div
+                className="flex h-7 shrink-0 items-center gap-1.5 border-b border-[#101010]/[0.06] px-3"
+                style={{ background: "#F2F1EB" }}
+              >
                 <span className="h-2.5 w-2.5 rounded-full bg-[#101010]/15" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[#101010]/15" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[#101010]/15" />
@@ -591,7 +585,7 @@ export function HeroPromptToAppV18() {
                 {/* Sidebar with progressive install */}
                 <div
                   className="flex h-full min-w-0 flex-col border-r border-[#101010]/[0.08] p-2.5"
-                  style={{ background: "#F7F7F9" }}
+                  style={{ background: "#F2F1EB" }}
                 >
                   <div className="mb-3 flex items-center gap-2 px-2 py-1.5">
                     <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-[#101010]/[0.06] text-[#101010]/80">

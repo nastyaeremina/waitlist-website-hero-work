@@ -1148,3 +1148,9 @@ body.hero-v17 .relative.z-10.w-full[class*="overflow-hidden"] {
   position: relative;
   z-index: 2;
 }
+
+/* v19 — match the EmailCTA pill bg to the visual frame bg (#FBFAF5)
+   so the CTA and the portal card read as the same elevated surface. */
+body.hero-v19 form {
+  background-color: #FBFAF5 !important;
+}
