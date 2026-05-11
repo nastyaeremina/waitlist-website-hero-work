@@ -61,14 +61,14 @@ export function EmailCTA({ theme = "dark" }) {
             "flex w-full items-center gap-1.5 rounded-full border p-1.5 pl-4 transition-colors duration-200",
             lime ? "backdrop-blur-xl" : "backdrop-blur-md",
             lime
-              ? "bg-white/25"
+              ? "bg-white/80"
               : light
               ? "bg-white/40"
               : "bg-white/[0.03]",
             error
               ? "border-[#E6836E]/50"
               : lime
-              ? "border-white/35 focus-within:border-white/60"
+              ? "border-[#101010]/15 focus-within:border-[#101010]/35"
               : light
               ? "border-[#101010]/15 focus-within:border-[#101010]/35"
               : "border-white/10 focus-within:border-white/25",
@@ -115,7 +115,9 @@ export function EmailCTA({ theme = "dark" }) {
               // the brand button, so a lime CTA fades into the bg at
               // the bottom of the hero. Use a dark pill on light theme
               // so the action stays unmistakable.
-              light
+              lime
+                ? "bg-[#D9ED92] text-[#101010] hover:bg-[#C7DA86]"
+                : light
                 ? "bg-[#101010] text-white hover:bg-[#2a2a2a]"
                 : "bg-[#D9ED92] text-[#101010] hover:bg-[#C7DA86]",
             ].join(" ")}

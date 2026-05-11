@@ -1040,3 +1040,80 @@ html.lenis body {
   }
 }
 
+
+
+/* v15: dark NarrativeBlock + dark ZoomHero backdrop so the rounded
+   hero card visually lifts off into the next (dark) chapter — that's
+   the card-style transition. Scoped via body.hero-v15. */
+body.hero-v15 div:has(> .origin-top) {
+  background-color: #101010 !important;
+}
+body.hero-v15 [data-section="narrative"] {
+  background: #101010 !important;
+}
+body.hero-v15 [data-section="narrative"] h2 {
+  color: #FFFFFF;
+}
+body.hero-v15 [data-section="narrative"] h2 > span {
+  color: rgba(255, 255, 255, 0.45);
+}
+body.hero-v15 [data-section="narrative"] p {
+  color: rgba(255, 255, 255, 0.6);
+}
+body.hero-v15 [data-section="narrative"] span.underline {
+  text-decoration-color: rgba(255, 255, 255, 0.4);
+}
+/* InlineTrigger hover/active state ships a dark `text-[#1A1A1A]`
+   that becomes invisible on the dark narrative — flip to white. */
+body.hero-v15 [data-section="narrative"] [class*="text-[#1A1A1A]"] {
+  color: #FFFFFF !important;
+}
+body.hero-v15 [data-section="narrative"] [class*="decoration-[#1A1A1A]/80"] {
+  text-decoration-color: rgba(255, 255, 255, 0.8) !important;
+}
+body.hero-v15 [data-section="narrative"] [class*="decoration-[#1A1A1A]/40"] {
+  text-decoration-color: rgba(255, 255, 255, 0.4) !important;
+}
+/* DetailPanel (side aside) — invert the #1A1A1A text and borders so
+   the panel reads on the dark narrative. Targets the side asides
+   which only render the DetailPanel content. */
+body.hero-v15 [data-section="narrative"] aside h3 {
+  color: #FFFFFF;
+}
+body.hero-v15 [data-section="narrative"] aside p {
+  color: rgba(255, 255, 255, 0.65);
+}
+body.hero-v15 [data-section="narrative"] aside [class*="text-[#1A1A1A]"]:not([class*="/"]) {
+  color: #FFFFFF;
+}
+body.hero-v15 [data-section="narrative"] aside [class*="text-[#1A1A1A]/45"] {
+  color: rgba(255, 255, 255, 0.55);
+}
+body.hero-v15 [data-section="narrative"] aside [class*="text-[#1A1A1A]/40"] {
+  color: rgba(255, 255, 255, 0.5);
+}
+body.hero-v15 [data-section="narrative"] aside [class*="text-[#1A1A1A]/65"] {
+  color: rgba(255, 255, 255, 0.7);
+}
+body.hero-v15 [data-section="narrative"] aside [class*="text-[#1A1A1A]/55"] {
+  color: rgba(255, 255, 255, 0.6);
+}
+body.hero-v15 [data-section="narrative"] aside [class*="text-[#1A1A1A]/35"] {
+  color: rgba(255, 255, 255, 0.45);
+}
+body.hero-v15 [data-section="narrative"] aside [class*="text-[#1A1A1A]/60"],
+body.hero-v15 [data-section="narrative"] aside [class*="text-[#1A1A1A]/70"],
+body.hero-v15 [data-section="narrative"] aside [class*="text-[#1A1A1A]/75"],
+body.hero-v15 [data-section="narrative"] aside [class*="text-[#1A1A1A]/80"],
+body.hero-v15 [data-section="narrative"] aside [class*="text-[#1A1A1A]/85"] {
+  color: rgba(255, 255, 255, 0.85);
+}
+body.hero-v15 [data-section="narrative"] aside [class*="border-[#1A1A1A]"] {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+body.hero-v15 [data-section="narrative"] aside [class*="bg-[#1A1A1A]"] {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+body.hero-v15 [data-section="narrative"] aside [class*="decoration-[#1A1A1A]"] {
+  text-decoration-color: rgba(255, 255, 255, 0.5) !important;
+}

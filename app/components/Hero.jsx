@@ -19,7 +19,7 @@ import { HeroPromptToAppV14 } from "./HeroPromptToAppV14";
 import { HeroPromptToAppV15 } from "./HeroPromptToAppV15";
 import { LogoStrip } from "./LogoStrip";
 
-const VERSIONS = ["v7", "v8", "v9", "v10", "v11", "v12", "v13", "v14", "v15"];
+const VERSIONS = ["v7", "v8", "v9", "v10", "v11", "v12", "v13", "v14", "v15", "v16"];
 const isVersion = (v) => VERSIONS.includes(v);
 
 const STORAGE_KEY = "hero-version";
@@ -62,9 +62,21 @@ export function Hero({
     } else {
       document.body.classList.remove("hero-v13");
     }
+    if (version === "v15") {
+      document.body.classList.add("hero-v15");
+      const narrative = document.querySelector('[data-section="narrative"]');
+      if (narrative) narrative.setAttribute("data-nav-theme", "dark");
+    } else {
+      document.body.classList.remove("hero-v15");
+      const narrative = document.querySelector('[data-section="narrative"]');
+      if (narrative) narrative.setAttribute("data-nav-theme", "light");
+    }
     return () => {
       outer.removeAttribute("data-nav-theme");
       document.body.classList.remove("hero-v13");
+      document.body.classList.remove("hero-v15");
+      const narrative = document.querySelector('[data-section="narrative"]');
+      if (narrative) narrative.setAttribute("data-nav-theme", "light");
     };
   }, [version]);
 
@@ -80,7 +92,7 @@ export function Hero({
 
   return (
     <div
-      className={version === "v8" || (version === "v9" || version === "v10" || version === "v11" || version === "v12" || version === "v13" || version === "v14" || version === "v15") ? "relative" : "contents"}
+      className={version === "v8" || (version === "v9" || version === "v10" || version === "v11" || version === "v12" || version === "v13" || version === "v14" || version === "v15" || version === "v16") ? "relative" : "contents"}
       {...(version === "v9" || version === "v13" || version === "v15" ? { "data-nav-theme": "light" } : {})}
     >
       {version === "v9" && (
@@ -120,6 +132,13 @@ export function Hero({
           style={{ background: "#101010" }}
         />
       )}
+      {version === "v16" && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0"
+          style={{ background: "#1C1B18" }}
+        />
+      )}
       {version === "v13" && (
         <div
           aria-hidden="true"
@@ -131,7 +150,7 @@ export function Hero({
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 z-0"
-          style={{ background: "#D9ED92" }}
+          style={{ background: "#F5F5F0" }}
         />
       )}
       {version === "v14" && (
@@ -157,7 +176,7 @@ export function Hero({
             hidden, unchanged. */}
       <section
         className={`relative flex flex-col ${
-          version === "v7" || version === "v8" || (version === "v9" || version === "v10" || version === "v11" || version === "v12" || version === "v13" || version === "v14" || version === "v15")
+          version === "v7" || version === "v8" || (version === "v9" || version === "v10" || version === "v11" || version === "v12" || version === "v13" || version === "v14" || version === "v15" || version === "v16")
             ? ""
             : "overflow-hidden lg:h-[min(100vh,1080px)]"
         }`}
@@ -222,6 +241,8 @@ export function Hero({
             <HeroPromptToAppV14 />
           ) : version === "v15" ? (
             <HeroPromptToAppV15 />
+          ) : version === "v16" ? (
+            <HeroPromptToAppV15 />
           ) : (
             <HeroPromptToApp />
           )}
@@ -268,7 +289,7 @@ export function Hero({
       {alphaLogos && alphaLogos.length > 0 && (
         <div
           className={`relative pb-10 pt-12 md:pb-12 md:pt-14 ${
-            version === "v8" || (version === "v9" || version === "v10" || version === "v11" || version === "v12" || version === "v13" || version === "v14" || version === "v15") ? "" : "bg-[var(--color-bg)]"
+            version === "v8" || (version === "v9" || version === "v10" || version === "v11" || version === "v12" || version === "v13" || version === "v14" || version === "v15" || version === "v16") ? "" : "bg-[var(--color-bg)]"
           } ${version === "v7" ? "lg:hidden" : ""}`}
         >
           <div className="mx-auto w-full max-w-[620px] px-6">

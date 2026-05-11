@@ -177,6 +177,7 @@ export function NarrativeBlock({ heading, callout, body }) {
     <section
       ref={ref}
       data-nav-theme="light"
+      data-section="narrative"
       className="relative bg-[#F5F5F0] pt-20 pb-32 md:pt-24 md:pb-40"
     >
       <div className="mx-auto max-w-6xl px-6">
