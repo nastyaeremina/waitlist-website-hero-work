@@ -1125,12 +1125,17 @@ body.hero-v16 [class*="rounded-[20px]"] {
   box-shadow: none !important;
 }
 
-/* v17: same v15 visual on the warm dark page, but without the
-   beige stage — the inner white cards float directly on the page. */
-body.hero-v17 [class*="rounded-[24px]"],
-body.hero-v17 [class*="rounded-[20px]"] {
-  box-shadow: none !important;
-}
+/* v17: stage is transparent on the warm dark page so the portal
+   preview reads as the running app and the composer overlays it
+   as a draggable window (handled in HeroPromptToAppV15 via the
+   `variant="overlay"` prop). */
 body.hero-v17 [class*="rounded-[24px]"] {
   background-color: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+/* Hero.jsx visual wrapper also clips by default — let the popup
+   roam freely on v17. */
+body.hero-v17 .relative.z-10.w-full[class*="overflow-hidden"] {
+  overflow: visible !important;
 }

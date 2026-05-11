@@ -5,7 +5,7 @@
 // reveal) but inverted for the lime/cream surface so the white cards
 // pop on the soft green stage.
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function MaskIcon({ src, className = "h-[14px] w-[14px]" }) {
   return (
@@ -375,9 +375,40 @@ function SidebarRow({ iconSrc, iconClass, label, active, muted, style }) {
   );
 }
 
-export function HeroPromptToAppV15() {
+export function HeroPromptToAppV15({ variant = "default" } = {}) {
+  const overlay = variant === "overlay";
   const now = useCycleClock();
   const [manualIndex, setManualIndex] = useState(null);
+
+  // Drag state for overlay composer — only used when variant === "overlay".
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const dragRef = useRef(null);
+  const startRef = useRef(null);
+  useEffect(() => {
+    if (!overlay) return;
+    const onMove = (e) => {
+      if (!startRef.current) return;
+      const dx = e.clientX - startRef.current.x;
+      const dy = e.clientY - startRef.current.y;
+      setPos({ x: startRef.current.px + dx, y: startRef.current.py + dy });
+    };
+    const onUp = () => {
+      startRef.current = null;
+      document.body.style.userSelect = "";
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+    };
+  }, [overlay]);
+  const onDragStart = (e) => {
+    if (!overlay) return;
+    startRef.current = { x: e.clientX, y: e.clientY, px: pos.x, py: pos.y };
+    document.body.style.userSelect = "none";
+    e.preventDefault();
+  };
 
   const totalMs = CYCLE_MS * APPS.length + FINAL_HOLD + RESET_FADE;
   const elapsed = now % totalMs;
@@ -441,7 +472,7 @@ export function HeroPromptToAppV15() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none relative mx-auto w-full max-w-[1180px] px-2 pt-10 pb-32 md:px-4 md:pt-14 md:pb-44 lg:px-6 lg:pt-2 lg:pb-24"
+      className={`relative mx-auto w-full max-w-[1180px] px-2 pt-10 pb-32 md:px-4 md:pt-14 md:pb-44 lg:px-6 lg:pt-2 lg:pb-24 ${overlay ? "" : "pointer-events-none"}`}
     >
       {/* ── Stage ──────────────────────────────────────────────────
           Cream/lime stage that frames the white cards on the lime
@@ -454,24 +485,41 @@ export function HeroPromptToAppV15() {
           boxShadow: "0 30px 80px -30px rgba(16,16,16,0.20)",
         }}
       >
-<div className="relative flex w-full flex-col items-stretch gap-4 lg:flex-row lg:gap-5">
+<div className={`relative w-full ${overlay ? "block" : "flex flex-col items-stretch gap-4 lg:flex-row lg:gap-5"}`}>
         {/* ── Composer ─ light card ─────────────────────────────── */}
-        <div className="relative w-full lg:w-[320px] lg:shrink-0">
+        <div
+          ref={dragRef}
+          className={`relative w-full ${overlay ? "lg:absolute lg:right-6 lg:top-6 lg:z-20 lg:w-[340px]" : "lg:w-[320px] lg:shrink-0"}`}
+          style={overlay ? { transform: `translate(${pos.x}px, ${pos.y}px)` } : undefined}
+        >
           <div
-            className="relative overflow-hidden rounded-[20px] border transition-transform duration-200"
+            className={`relative overflow-hidden border transition-transform duration-200 ${overlay ? "rounded-[14px]" : "rounded-[20px]"}`}
             style={{
               backgroundColor: "#FFFFFF",
-              borderColor: "rgba(16,16,16,0.06)",
+              borderColor: overlay ? "rgba(16,16,16,0.08)" : "rgba(16,16,16,0.06)",
               transform: `scale(${pulseScale})`,
               transformOrigin: "center center",
               zIndex: 1,
-              boxShadow:
-                "0 1px 0 rgba(255,255,255,0.8) inset, 0 8px 24px -12px rgba(16,16,16,0.15)",
+              boxShadow: overlay
+                ? "0 1px 0 rgba(255,255,255,0.95) inset, 0 2px 6px -2px rgba(0,0,0,0.18), 0 16px 36px -18px rgba(0,0,0,0.28)"
+                : "0 1px 0 rgba(255,255,255,0.8) inset, 0 8px 24px -12px rgba(16,16,16,0.15)",
             }}
           >
-            <div className="px-5 pt-4 pb-4">
-              <div className="relative mb-2 text-[12px] text-[#101010]/30">Describe your app</div>
-              <div className="min-h-[44px] text-[14px] leading-[1.45] text-[#101010]">
+            {overlay && (
+              <div
+                onPointerDown={onDragStart}
+                aria-hidden="true"
+                className="pointer-events-auto flex h-7 items-center gap-1.5 border-b border-[#101010]/[0.05] bg-[#FAFAF6] px-3"
+                style={{ cursor: startRef.current ? "grabbing" : "grab" }}
+              >
+                <span className="h-2.5 w-2.5 rounded-full bg-[#101010]/15" />
+                <span className="h-2.5 w-2.5 rounded-full bg-[#101010]/15" />
+                <span className="h-2.5 w-2.5 rounded-full bg-[#101010]/15" />
+              </div>
+            )}
+            <div className={overlay ? "px-5 pt-4 pb-3" : "px-5 pt-4 pb-4"}>
+              <div className={`relative ${overlay ? "mb-1.5 text-[11px] text-[#101010]/35" : "mb-2 text-[12px] text-[#101010]/30"}`}>Describe your app</div>
+              <div className={`text-[#101010] ${overlay ? "min-h-[60px] text-[14px] leading-[1.5]" : "min-h-[44px] text-[14px] leading-[1.45]"}`}>
                 {thinking ? (
                   <span className="text-[#101010]/55">
                     Hold on, we&apos;re generating your app…
@@ -491,37 +539,48 @@ export function HeroPromptToAppV15() {
               </div>
             </div>
 
-            {/* Build tabs — composer footer chip-row. */}
-            <div className="pointer-events-auto flex flex-wrap items-center gap-1 border-t border-[#101010]/[0.06] px-3 py-2">
-              {APPS.map((a, i) => {
-                const isSelected =
-                  manualIndex !== null
-                    ? i === manualIndex
-                    : phase === "running" && i === cycleIndex;
-                return (
-                  <button
-                    key={a.id}
-                    type="button"
-                    onClick={() => setManualIndex(i)}
-                    className={[
-                      "flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-1 text-[11px] leading-none transition-colors duration-200",
-                      isSelected
-                        ? "bg-[#101010]/[0.08] text-[#101010]/75"
-                        : "text-[#101010]/55 hover:bg-[#101010]/[0.04] hover:text-[#101010]/75",
-                    ].join(" ")}
-                  >
-                    <span
+            {/* Build tabs — composer footer chip-row. Overlay variant
+                renders chips as rounded-full pills with a subtle stroke
+                (Grok-style), keeping the same light theme as the rest
+                of the composer. */}
+            <div className={`pointer-events-auto flex items-center ${overlay ? "gap-1.5 px-3 pb-3" : "gap-1.5 border-t border-[#101010]/[0.06] px-3 py-2"}`}>
+              <div className={`flex min-w-0 items-center ${overlay ? "flex-nowrap gap-1 overflow-hidden" : "flex-wrap gap-1.5"}`}>
+                {APPS.map((a, i) => {
+                  const isSelected =
+                    manualIndex !== null
+                      ? i === manualIndex
+                      : phase === "running" && i === cycleIndex;
+                  return (
+                    <button
+                      key={a.id}
+                      type="button"
+                      onClick={() => setManualIndex(i)}
                       className={[
-                        "flex h-3 w-3 shrink-0 items-center justify-center",
-                        isSelected ? "text-[#101010]/75" : "text-[#101010]/55",
+                        overlay
+                          ? "flex shrink-0 cursor-pointer items-center gap-1 whitespace-nowrap rounded-full px-2 py-[4px] text-[10.5px] leading-none transition-colors duration-200"
+                          : "flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-1 text-[11px] leading-none transition-colors duration-200",
+                        overlay
+                          ? isSelected
+                            ? "bg-[#101010]/[0.05] text-[#101010]/85"
+                            : "bg-transparent text-[#101010]/55 hover:bg-[#101010]/[0.03] hover:text-[#101010]/85"
+                          : isSelected
+                            ? "bg-[#101010]/[0.08] text-[#101010]/75"
+                            : "text-[#101010]/55 hover:bg-[#101010]/[0.04] hover:text-[#101010]/75",
                       ].join(" ")}
                     >
-                      <MaskIcon src={a.iconSrc} className="h-3 w-3" />
-                    </span>
-                    <span>{a.label}</span>
-                  </button>
-                );
-              })}
+                      <span
+                        className={[
+                          "flex h-3 w-3 shrink-0 items-center justify-center",
+                          isSelected ? "text-[#101010]/75" : "text-[#101010]/55",
+                        ].join(" ")}
+                      >
+                        <MaskIcon src={a.iconSrc} className="h-3 w-3" />
+                      </span>
+                      <span>{a.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
@@ -529,7 +588,7 @@ export function HeroPromptToAppV15() {
         {/* ── Portal preview ─────────────────────────────────────── */}
         <div className="relative hidden w-full lg:block lg:min-w-0 lg:flex-1">
           <div
-            className="relative overflow-hidden rounded-[20px] border"
+            className={`relative overflow-hidden border ${overlay ? "rounded-[14px]" : "rounded-[20px]"}`}
             style={{
               backgroundColor: "#FFFFFF",
               borderColor: "rgba(16,16,16,0.06)",

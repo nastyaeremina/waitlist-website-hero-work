@@ -263,7 +263,7 @@ export function Hero({
           ) : version === "v16" ? (
             <HeroPromptToAppV15 />
           ) : version === "v17" ? (
-            <HeroPromptToAppV15 />
+            <HeroPromptToAppV15 variant="overlay" />
           ) : (
             <HeroPromptToApp />
           )}
