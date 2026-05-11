@@ -129,7 +129,8 @@ function typed(text, t) {
 // Light-card content — the portal sits as a white surface on the dark
 // hero, so text/borders stay dark for legibility. Mirrors v15 views.
 
-const CARD = "rounded bg-[#101010]/[0.04]";
+const CARD =
+  "rounded border border-[#101010]/[0.10] bg-white shadow-[0_1px_2px_rgba(16,16,16,0.04)]";
 
 function HomeView() {
   const updates = [
@@ -158,14 +159,14 @@ function HomeView() {
         </div>
       </div>
 
-      <div className="h-[70px] w-full rounded-[6px] bg-[#101010]/[0.04] lg:h-[120px]" />
+      <div className="h-[70px] w-full rounded-[6px] border border-[#101010]/[0.08] bg-white lg:h-[120px]" />
 
       <div className="flex flex-col gap-1.5">
         <div className="px-1 text-[11px] text-[#101010]/30">Latest updates</div>
         {updates.map((u, i) => (
           <div
             key={i}
-            className="flex min-w-0 flex-col gap-0.5 rounded bg-[#101010]/[0.04] px-3 py-2"
+            className={`${CARD} flex min-w-0 flex-col gap-0.5 px-3 py-2`}
           >
             <div className="flex min-w-0 items-center justify-between gap-2">
               <span className="truncate text-[11px] text-[#101010]/75">
@@ -377,12 +378,12 @@ function SidebarRow({ iconSrc, iconClass, label, active, muted, style }) {
   return (
     <div
       className={[
-        "flex items-center gap-2 rounded px-2 py-1.5 text-[12px] leading-none transition-colors duration-300",
+        "flex items-center gap-2 rounded px-2 py-1.5 text-[12px] leading-none transition-colors duration-200",
         active
-          ? "bg-[#101010]/[0.08] text-[#101010]/85"
+          ? "border border-[#101010]/[0.10] bg-white text-[#101010]/85 shadow-[0_1px_0_rgba(16,16,16,0.02)]"
           : muted
-          ? "text-[#101010]/55"
-          : "text-[#101010]/75",
+          ? "text-[#101010]/55 hover:bg-[#101010]/[0.04] hover:text-[#101010]/75"
+          : "text-[#101010]/75 hover:bg-[#101010]/[0.04]",
       ].join(" ")}
       style={style}
     >
@@ -398,21 +399,20 @@ function SidebarRow({ iconSrc, iconClass, label, active, muted, style }) {
 
 export function HeroPromptToAppV18() {
   const now = useCycleClock();
-  // Manual override: clicking a tab pins that app as installed and
-  // selected, skipping the rest of the auto-build sequence.
-  const [manualIndex, setManualIndex] = useState(null);
+  // Clicking a tab anchors the cycle to start fresh at that app's
+  // running beat — the cycle keeps progressing from there instead of
+  // freezing.
+  const [clickAnchor, setClickAnchor] = useState({ index: 0, time: 0 });
 
   const totalMs = CYCLE_MS * APPS.length + FINAL_HOLD + RESET_FADE;
-  const elapsed = now % totalMs;
+  const anchorOffsetMs = clickAnchor.index * CYCLE_MS;
+  const sinceAnchor = Math.max(0, now - clickAnchor.time);
+  const elapsed = (sinceAnchor + anchorOffsetMs) % totalMs;
 
   let cycleIndex;
   let cycleT;
   let phase;
-  if (manualIndex !== null) {
-    cycleIndex = manualIndex;
-    cycleT = CYCLE_MS;
-    phase = "hold";
-  } else if (elapsed < CYCLE_MS * APPS.length) {
+  if (elapsed < CYCLE_MS * APPS.length) {
     cycleIndex = Math.floor(elapsed / CYCLE_MS);
     cycleT = elapsed - cycleIndex * CYCLE_MS;
     phase = "running";
@@ -439,7 +439,7 @@ export function HeroPromptToAppV18() {
   if (phase === "reset") {
     installed = 0;
   } else if (phase === "hold") {
-    installed = manualIndex !== null ? manualIndex + 1 : APPS.length;
+    installed = APPS.length;
   } else {
     installed = sent ? cycleIndex + 1 : cycleIndex;
   }
@@ -452,42 +452,37 @@ export function HeroPromptToAppV18() {
   const shimmerX = -120 + shimmerCycle * 340;
 
   const activeAppId =
-    manualIndex !== null
-      ? APPS[manualIndex].id
-      : phase === "reset"
+    phase === "reset"
       ? "home"
       : installed === 0
       ? "home"
       : APPS[installed - 1].id;
 
   // Progress through the current app's full cycle for the tab underbar.
-  const tabProgressIndex = manualIndex !== null ? manualIndex : cycleIndex;
+  const tabProgressIndex = cycleIndex;
   const tabProgress =
-    manualIndex !== null
-      ? 1
-      : phase === "running"
-      ? Math.min(1, cycleT / CYCLE_MS)
-      : 1;
+    phase === "running" ? Math.min(1, cycleT / CYCLE_MS) : 1;
 
   const handleTabClick = (idx) => {
-    setManualIndex((prev) => (prev === idx ? null : idx));
+    setClickAnchor({ index: idx, time: now });
   };
 
   return (
     <div className="pointer-events-none relative mx-auto w-full max-w-[1180px] px-2 pt-10 pb-24 md:px-4 md:pt-14 md:pb-32 lg:px-6 lg:pt-2 lg:pb-16">
       {/* ── Outer frame ────────────────────────────────────────────
-          Single bordered card wrapping tabs + composer + portal. */}
+          Light card sitting on the dark hero — single bordered surface
+          wrapping tabs + composer + portal. */}
       <div
         className="relative w-full overflow-hidden rounded-[16px] border"
         style={{
-          backgroundColor: "rgba(255,255,255,0.03)",
-          borderColor: "rgba(255,255,255,0.10)",
+          backgroundColor: "#FFFFFF",
+          borderColor: "rgba(16,16,16,0.10)",
           boxShadow:
-            "0 1px 0 rgba(255,255,255,0.04) inset, 0 8px 24px -18px rgba(0,0,0,0.4)",
+            "0 1px 0 rgba(255,255,255,0.8) inset, 0 24px 60px -28px rgba(0,0,0,0.55)",
         }}
       >
         {/* ── Top tab strip ─────────────────────────────────────── */}
-        <div className="border-b border-white/[0.08] pb-0">
+        <div className="border-b border-[#101010]/[0.08] pb-0">
           <div className="flex items-center gap-1 overflow-hidden px-3">
             {APPS.map((a, i) => {
               const isActive = i === tabProgressIndex;
@@ -498,14 +493,14 @@ export function HeroPromptToAppV18() {
                   onClick={() => handleTabClick(i)}
                   aria-label={`Show ${a.label}`}
                   className={[
-                    "pointer-events-auto relative flex shrink-0 cursor-pointer items-center gap-1.5 px-4 py-4 text-[12px] leading-none transition-colors duration-150 focus:outline-none focus-visible:ring-1 focus-visible:ring-white/40",
-                    i > 0 ? "border-l border-white/[0.08]" : "",
+                    "pointer-events-auto relative flex shrink-0 cursor-pointer items-center gap-1.5 px-4 py-4 text-[12px] leading-none transition-colors duration-150 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#101010]/40",
+                    i > 0 ? "border-l border-[#101010]/[0.08]" : "",
                   ].join(" ")}
                 >
                   <span
                     className={[
                       "flex h-5 w-5 shrink-0 items-center justify-center",
-                      isActive ? "text-white/90" : "text-white/40",
+                      isActive ? "text-[#101010]/85" : "text-[#101010]/40",
                     ].join(" ")}
                   >
                     <MaskIcon
@@ -514,14 +509,22 @@ export function HeroPromptToAppV18() {
                     />
                   </span>
                   <span
-                    className={isActive ? "text-white/90" : "text-white/45"}
+                    className={isActive ? "text-[#101010]/85" : "text-[#101010]/45"}
                   >
                     {a.label}
                   </span>
                   {isActive && (
                     <span
                       aria-hidden="true"
-                      className="absolute -bottom-[1px] left-0 z-10 h-[2px] w-full origin-left bg-white"
+                      className={[
+                        "absolute -bottom-[1px] z-10 h-[2px] origin-left bg-[#101010]",
+                        // For the first tab, extend the bar left into the
+                        // strip's px-3 gutter so progress starts flush at
+                        // the frame edge instead of inside the tab.
+                        i === 0
+                          ? "-left-3 w-[calc(100%+0.75rem)]"
+                          : "left-0 w-full",
+                      ].join(" ")}
                       style={{ transform: `scaleX(${tabProgress})` }}
                     />
                   )}
@@ -532,41 +535,39 @@ export function HeroPromptToAppV18() {
         </div>
 
         {/* ── Body: composer + portal ───────────────────────────── */}
-        <div className="grid grid-cols-1 pt-3 lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)]">
-          {/* Composer */}
-          <div className="relative px-5 pb-3">
-            <div className="px-5 py-5">
-              <div className="mb-2 text-[12px] text-white/50">
-                Describe your app
-              </div>
-              <div className="min-h-[60px] text-[14px] leading-[1.5] text-white/90">
-                {thinking ? (
-                  <span className="text-white/55">
-                    Hold on, we&apos;re generating your app…
-                  </span>
-                ) : promptText ? (
-                  <>
-                    {promptText}
-                    {showCursor && (
-                      <span className="ml-[1px] inline-block h-[14px] w-[1px] -translate-y-[1px] animate-pulse bg-white/90 align-middle" />
-                    )}
-                  </>
-                ) : (
-                  <span className="text-white/35">
-                    Build a time tracker for my team…
-                  </span>
-                )}
-              </div>
+        <div className="grid grid-cols-1 gap-3 px-3 pt-3 pb-3 lg:grid-cols-[minmax(0,300px)_minmax(0,1fr)]">
+          {/* Composer — input-style panel */}
+          <div className="relative p-4">
+            <div className="mb-2 text-[12px] text-[#101010]/45">
+              Describe your app
+            </div>
+            <div className="min-h-[60px] text-[14px] leading-[1.5] text-[#101010]/85">
+              {thinking ? (
+                <span className="text-[#101010]/55">
+                  Hold on, we&apos;re generating your app…
+                </span>
+              ) : promptText ? (
+                <>
+                  {promptText}
+                  {showCursor && (
+                    <span className="ml-[1px] inline-block h-[14px] w-[1px] -translate-y-[1px] animate-pulse bg-[#101010]/85 align-middle" />
+                  )}
+                </>
+              ) : (
+                <span className="text-[#101010]/35">
+                  Build a time tracker for my team…
+                </span>
+              )}
             </div>
           </div>
 
           {/* Portal preview */}
-          <div className="relative pr-3 pb-3">
+          <div className="relative">
             <div
               className="overflow-hidden rounded-[10px] border border-[#101010]/[0.10]"
-              style={{ background: "#F5F6F8" }}
+              style={{ background: "#FFFFFF" }}
             >
-              <div className="flex h-7 shrink-0 items-center gap-1.5 border-b border-[#101010]/[0.06] bg-[#ECEEF2] px-3">
+              <div className="flex h-7 shrink-0 items-center gap-1.5 border-b border-[#101010]/[0.06] bg-white px-3">
                 <span className="h-2.5 w-2.5 rounded-full bg-[#101010]/15" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[#101010]/15" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[#101010]/15" />
@@ -574,7 +575,10 @@ export function HeroPromptToAppV18() {
 
               <div className="grid h-[360px] grid-cols-[140px_1fr] gap-0 lg:h-[520px]">
                 {/* Sidebar with progressive install */}
-                <div className="flex h-full min-w-0 flex-col border-r border-[#101010]/[0.08] p-2.5">
+                <div
+                  className="flex h-full min-w-0 flex-col border-r border-[#101010]/[0.08] p-2.5"
+                  style={{ background: "#F7F7F9" }}
+                >
                   <div className="mb-3 flex items-center gap-2 px-2 py-1.5">
                     <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-[#101010]/[0.06] text-[#101010]/80">
                       <BrandMagesMark className="h-3.5 w-3.5" />
