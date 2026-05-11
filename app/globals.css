@@ -1139,3 +1139,12 @@ body.hero-v17 [class*="rounded-[24px]"] {
 body.hero-v17 .relative.z-10.w-full[class*="overflow-hidden"] {
   overflow: visible !important;
 }
+
+/* Narrative section sits flush against the hero on every variant —
+   no rounded top, no overlap, no lifting shadow, no scroll-tied
+   curtain animation. The hero→narrative seam is a clean color cut
+   carried by the ZoomHero scale-down alone. */
+[data-section="narrative"] {
+  position: relative;
+  z-index: 2;
+}

@@ -11,6 +11,7 @@ import { HeroPromptToAppV5 } from "./HeroPromptToAppV5";
 import { HeroPromptToAppV7 } from "./HeroPromptToAppV7";
 import { HeroPromptToAppV8 } from "./HeroPromptToAppV8";
 import { HeroPromptToAppV9 } from "./HeroPromptToAppV9";
+import { HeroPromptToAppV18 } from "./HeroPromptToAppV18";
 import { HeroPromptToAppV10 } from "./HeroPromptToAppV10";
 import { HeroPromptToAppV11 } from "./HeroPromptToAppV11";
 import { HeroPromptToAppV12 } from "./HeroPromptToAppV12";
@@ -19,7 +20,7 @@ import { HeroPromptToAppV14 } from "./HeroPromptToAppV14";
 import { HeroPromptToAppV15 } from "./HeroPromptToAppV15";
 import { LogoStrip } from "./LogoStrip";
 
-const VERSIONS = ["v7", "v8", "v9", "v10", "v11", "v12", "v13", "v14", "v15", "v16", "v17"];
+const VERSIONS = ["v7", "v8", "v9", "v10", "v11", "v12", "v13", "v14", "v15", "v16", "v17", "v18"];
 const isVersion = (v) => VERSIONS.includes(v);
 
 const STORAGE_KEY = "hero-version";
@@ -81,12 +82,18 @@ export function Hero({
     } else {
       document.body.classList.remove("hero-v17");
     }
+    if (version === "v18") {
+      document.body.classList.add("hero-v18");
+    } else {
+      document.body.classList.remove("hero-v18");
+    }
     return () => {
       outer.removeAttribute("data-nav-theme");
       document.body.classList.remove("hero-v13");
       document.body.classList.remove("hero-v15");
       document.body.classList.remove("hero-v16");
       document.body.classList.remove("hero-v17");
+      document.body.classList.remove("hero-v18");
       const narrative = document.querySelector('[data-section="narrative"]');
       if (narrative) narrative.setAttribute("data-nav-theme", "light");
     };
@@ -104,7 +111,7 @@ export function Hero({
 
   return (
     <div
-      className={version === "v8" || (version === "v9" || version === "v10" || version === "v11" || version === "v12" || version === "v13" || version === "v14" || version === "v15" || version === "v16" || version === "v17") ? "relative" : "contents"}
+      className={version === "v8" || (version === "v9" || version === "v10" || version === "v11" || version === "v12" || version === "v13" || version === "v14" || version === "v15" || version === "v16" || version === "v17" || version === "v18") ? "relative" : "contents"}
       {...(version === "v9" || version === "v13" || version === "v15" ? { "data-nav-theme": "light" } : {})}
     >
       {version === "v9" && (
@@ -112,6 +119,13 @@ export function Hero({
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 z-0"
           style={{ background: "#f6f6f2" }}
+        />
+      )}
+      {version === "v18" && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0"
+          style={{ background: "#101010" }}
         />
       )}
       {version === "v10" && (
@@ -195,7 +209,7 @@ export function Hero({
             hidden, unchanged. */}
       <section
         className={`relative flex flex-col ${
-          version === "v7" || version === "v8" || (version === "v9" || version === "v10" || version === "v11" || version === "v12" || version === "v13" || version === "v14" || version === "v15" || version === "v16" || version === "v17")
+          version === "v7" || version === "v8" || (version === "v9" || version === "v10" || version === "v11" || version === "v12" || version === "v13" || version === "v14" || version === "v15" || version === "v16" || version === "v17" || version === "v18")
             ? ""
             : "overflow-hidden lg:h-[min(100vh,1080px)]"
         }`}
@@ -264,6 +278,8 @@ export function Hero({
             <HeroPromptToAppV15 />
           ) : version === "v17" ? (
             <HeroPromptToAppV15 variant="overlay" />
+          ) : version === "v18" ? (
+            <HeroPromptToAppV18 />
           ) : (
             <HeroPromptToApp />
           )}
@@ -310,7 +326,7 @@ export function Hero({
       {alphaLogos && alphaLogos.length > 0 && (
         <div
           className={`relative pb-10 pt-12 md:pb-12 md:pt-14 ${
-            version === "v8" || (version === "v9" || version === "v10" || version === "v11" || version === "v12" || version === "v13" || version === "v14" || version === "v15" || version === "v16" || version === "v17") ? "" : "bg-[var(--color-bg)]"
+            version === "v8" || (version === "v9" || version === "v10" || version === "v11" || version === "v12" || version === "v13" || version === "v14" || version === "v15" || version === "v16" || version === "v17" || version === "v18") ? "" : "bg-[var(--color-bg)]"
           } ${version === "v7" ? "lg:hidden" : ""}`}
         >
           <div className="mx-auto w-full max-w-[620px] px-6">
