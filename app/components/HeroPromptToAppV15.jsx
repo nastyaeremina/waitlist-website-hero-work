@@ -79,8 +79,8 @@ const TYPE_END = 3600;
 const SEND = 4000;
 const REVEAL_END = 5400;
 const CYCLE_MS = 8400;
-const FINAL_HOLD = 3000;
-const RESET_FADE = 900;
+const FINAL_HOLD = 1200;
+const RESET_FADE = 600;
 
 function useCycleClock() {
   const [now, setNow] = useState(0);

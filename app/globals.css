@@ -1117,3 +1117,20 @@ body.hero-v15 [data-section="narrative"] aside [class*="bg-[#1A1A1A]"] {
 body.hero-v15 [data-section="narrative"] aside [class*="decoration-[#1A1A1A]"] {
   text-decoration-color: rgba(255, 255, 255, 0.5) !important;
 }
+
+/* v16: remove drop shadows from the v15 visual's stage + cards so
+   they read flatter on the warm dark page. */
+body.hero-v16 [class*="rounded-[24px]"],
+body.hero-v16 [class*="rounded-[20px]"] {
+  box-shadow: none !important;
+}
+
+/* v17: same v15 visual on the warm dark page, but without the
+   beige stage — the inner white cards float directly on the page. */
+body.hero-v17 [class*="rounded-[24px]"],
+body.hero-v17 [class*="rounded-[20px]"] {
+  box-shadow: none !important;
+}
+body.hero-v17 [class*="rounded-[24px]"] {
+  background-color: transparent !important;
+}

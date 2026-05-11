@@ -61,7 +61,7 @@ export function EmailCTA({ theme = "dark" }) {
             "flex w-full items-center gap-1.5 rounded-full border p-1.5 pl-4 transition-colors duration-200",
             lime ? "backdrop-blur-xl" : "backdrop-blur-md",
             lime
-              ? "bg-white/80"
+              ? "bg-transparent"
               : light
               ? "bg-white/40"
               : "bg-white/[0.03]",
@@ -73,14 +73,7 @@ export function EmailCTA({ theme = "dark" }) {
               ? "border-[#101010]/15 focus-within:border-[#101010]/35"
               : "border-white/10 focus-within:border-white/25",
           ].join(" ")}
-          style={
-            lime
-              ? {
-                  boxShadow:
-                    "0 1px 0 rgba(255,255,255,0.5) inset, 0 0 0 1px rgba(255,255,255,0.35) inset",
-                }
-              : undefined
-          }
+          style={undefined}
         >
           <input
             // `data-waitlist-email` is the target the nav CTA scrolls to
