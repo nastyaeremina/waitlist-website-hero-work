@@ -1223,51 +1223,198 @@ body.hero-v20 .bg-\[\#101010\]\/\[0\.04\] {
   background-color: rgba(90, 74, 46, 0.10) !important;
 }
 
-/* v21 — same V19 borderless card structure as v20, on a dark (#101010)
-   page bg with no green gradient. Cream surfaces swap to pure white;
-   borders bump up a step (0.06/0.08/0.10 → 0.08/0.10/0.12) so they
-   still read against white, and the hover/active tints bump similarly
-   (0.04/0.06/0.08 → 0.05/0.07/0.09) so highlights stay visible. The
-   `#FEFDF8` chip cards collapse into the white surface the same way
-   they collapse into cream in v20. */
+/* v21 + v22 — V19 borderless card structure on a dark (#101010) page
+   bg. Cream surfaces swap to pure white; borders bump up a step
+   (0.06/0.08/0.10 → 0.08/0.10/0.12) so they still read against white,
+   and the hover/active tints bump similarly (0.04/0.06/0.08 →
+   0.05/0.07/0.09) so highlights stay visible. The `#FEFDF8` chip
+   cards collapse into the white surface the same way they collapse
+   into cream in v20. */
 body.hero-v21 [style*="rgb(245, 242, 232)"],
-body.hero-v22 [style*="rgb(245, 242, 232)"] {
+body.hero-v22 [style*="rgb(245, 242, 232)"],
+body.hero-v23 [style*="rgb(245, 242, 232)"] {
   background-color: #FFFFFF !important;
 }
 body.hero-v21 .border-\[\#101010\]\/\[0\.06\],
-body.hero-v22 .border-\[\#101010\]\/\[0\.06\] {
-  border-color: rgba(16, 16, 16, 0.08) !important;
+body.hero-v22 .border-\[\#101010\]\/\[0\.06\],
+body.hero-v23 .border-\[\#101010\]\/\[0\.06\] {
+  border-color: rgba(16, 16, 16, 0.04) !important;
 }
 body.hero-v21 .border-\[\#101010\]\/\[0\.08\],
-body.hero-v22 .border-\[\#101010\]\/\[0\.08\] {
-  border-color: rgba(16, 16, 16, 0.10) !important;
+body.hero-v22 .border-\[\#101010\]\/\[0\.08\],
+body.hero-v23 .border-\[\#101010\]\/\[0\.08\] {
+  border-color: rgba(16, 16, 16, 0.06) !important;
 }
 body.hero-v21 .border-\[\#101010\]\/\[0\.10\],
-body.hero-v22 .border-\[\#101010\]\/\[0\.10\] {
-  border-color: rgba(16, 16, 16, 0.12) !important;
+body.hero-v22 .border-\[\#101010\]\/\[0\.10\],
+body.hero-v23 .border-\[\#101010\]\/\[0\.10\] {
+  border-color: rgba(16, 16, 16, 0.08) !important;
 }
 body.hero-v21 .bg-\[\#101010\]\/\[0\.04\],
 body.hero-v21 .hover\:bg-\[\#101010\]\/\[0\.04\]:hover,
 body.hero-v22 .bg-\[\#101010\]\/\[0\.04\],
-body.hero-v22 .hover\:bg-\[\#101010\]\/\[0\.04\]:hover {
-  background-color: rgba(16, 16, 16, 0.05) !important;
+body.hero-v22 .hover\:bg-\[\#101010\]\/\[0\.04\]:hover,
+body.hero-v23 .bg-\[\#101010\]\/\[0\.04\],
+body.hero-v23 .hover\:bg-\[\#101010\]\/\[0\.04\]:hover {
+  background-color: rgba(16, 16, 16, 0.03) !important;
 }
 body.hero-v21 .bg-\[\#101010\]\/\[0\.06\],
-body.hero-v22 .bg-\[\#101010\]\/\[0\.06\] {
-  background-color: rgba(16, 16, 16, 0.07) !important;
+body.hero-v22 .bg-\[\#101010\]\/\[0\.06\],
+body.hero-v23 .bg-\[\#101010\]\/\[0\.06\] {
+  background-color: rgba(16, 16, 16, 0.04) !important;
 }
 body.hero-v21 .bg-\[\#101010\]\/\[0\.08\],
-body.hero-v22 .bg-\[\#101010\]\/\[0\.08\] {
-  background-color: rgba(16, 16, 16, 0.09) !important;
+body.hero-v22 .bg-\[\#101010\]\/\[0\.08\],
+body.hero-v23 .bg-\[\#101010\]\/\[0\.08\] {
+  background-color: rgba(16, 16, 16, 0.06) !important;
 }
 
 body.hero-v21 .bg-\[\#FEFDF8\],
-body.hero-v22 .bg-\[\#FEFDF8\] {
+body.hero-v22 .bg-\[\#FEFDF8\],
+body.hero-v23 .bg-\[\#FEFDF8\] {
   background-color: transparent !important;
 }
-body.hero-v21 .shadow-\[0_1px_2px_rgba\(16\,16\,16\,0\.04\)\],
-body.hero-v22 .shadow-\[0_1px_2px_rgba\(16\,16\,16\,0\.04\)\] {
+
+/* v20 — keep the portal preview flush on the cream borderless card
+   (no elevation shadow). v21 + v23 keep the lift since they sit on
+   different page surfaces. */
+body.hero-v20 .shadow-\[0_10px_28px_-8px_rgba\(16\,16\,16\,0\.18\)\] {
   box-shadow: none !important;
+}
+
+/* v21 — swap the active tab's progress underbar from beige to dark
+   grey so it reads against the white card with proper neutral
+   contrast. v20 keeps beige (matches its cream surface). */
+body.hero-v21 .bg-\[\#A39C84\] {
+  background-color: rgba(16, 16, 16, 0.55) !important;
+}
+body.hero-v21 .shadow-\[0_1px_2px_rgba\(16\,16\,16\,0\.04\)\],
+body.hero-v22 .shadow-\[0_1px_2px_rgba\(16\,16\,16\,0\.04\)\],
+body.hero-v23 .shadow-\[0_1px_2px_rgba\(16\,16\,16\,0\.04\)\] {
+  box-shadow: none !important;
+}
+
+/* Mobile portal — fade the last visible row at the bottom so list
+   items don't hard-clip at the portal edge. Desktop is tall enough
+   for full rows, so the mask only applies below lg. */
+@media (max-width: 1023.98px) {
+  .hero-portal-content {
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      black 0%,
+      black 78%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      180deg,
+      black 0%,
+      black 78%,
+      transparent 100%
+    );
+  }
+}
+
+/* v22 — solid periwinkle hero. The lime CTA button stays lime since
+   it now pops against the periwinkle as a brand accent. The EmailCTA
+   container loses its dark translucent wash (looked muddy on the
+   bright bg) and switches to a white pill so the input + button read
+   as a single elevated surface against the periwinkle. */
+body.hero-v22 form {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: none !important;
+}
+body.hero-v22 form input::placeholder {
+  color: rgba(16, 16, 16, 0.45) !important;
+}
+body.hero-v22 form input {
+  color: #101010 !important;
+}
+
+/* v23 — dark→periwinkle gradient hero. EmailCTA keeps its default
+   dark translucent wash; the lime CTA button flips to periwinkle so
+   it picks up the bottom-of-hero gradient tone. */
+body.hero-v23 .bg-\[\#D9ED92\] {
+  background-color: #7DA4FF !important;
+}
+body.hero-v23 .hover\:bg-\[\#C7DA86\]:hover {
+  background-color: #6890E8 !important;
+}
+
+/* v22 — drop the dotted background pattern inside the card so the
+   composer + portal sit on a clean white surface. Scoped to the dot
+   pattern's exact rgba so the hero's ambient gradient stays. */
+body.hero-v21 [style*="rgba(16, 16, 16, 0.1) 1px"],
+body.hero-v23 [style*="rgba(16, 16, 16, 0.1) 1px"] {
+  background-image: none !important;
+}
+
+
+/* v22 — soft periwinkle glow halo above the card's top edge. Sits
+   behind the card so it bleeds out around the top; brightens + lifts
+   slightly on hover for an interactive feel. The outer V19 wrapper
+   (rounded-[20px] p-2.5) is the pseudo-element host. */
+body.hero-v22 .rounded-\[20px\].p-2\.5,
+body.hero-v23 .rounded-\[20px\].p-2\.5 {
+  isolation: isolate;
+}
+body.hero-v22 .rounded-\[20px\].p-2\.5::before,
+body.hero-v23 .rounded-\[20px\].p-2\.5::before {
+  content: "";
+  position: absolute;
+  top: -80px;
+  left: 8%;
+  right: 8%;
+  height: 120px;
+  background: radial-gradient(
+    ellipse 50% 100% at 50% 100%,
+    rgba(125, 164, 255, 0.55) 0%,
+    rgba(125, 164, 255, 0) 70%
+  );
+  filter: blur(24px);
+  pointer-events: none;
+  opacity: 0.45;
+  transform: translateY(8px);
+  transition: opacity 450ms cubic-bezier(0.4, 0, 0.2, 1),
+              transform 450ms cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+}
+body.hero-v22 .rounded-\[20px\].p-2\.5:hover::before,
+body.hero-v23 .rounded-\[20px\].p-2\.5:hover::before {
+  opacity: 1;
+  transform: translateY(0) scale(1.08);
+}
+
+/* v22 — swap the outer card gradient on each valueProps visual
+   (ThreeSteps, ClientPortal, StudioApp) to flat periwinkle (#7DA4FF)
+   so the visual sits in the same hero tone instead of carrying the
+   default sage→lime gradient. */
+body.hero-v22 .aspect-\[3\/2\].rounded-\[16px\],
+body.hero-v23 .aspect-\[3\/2\].rounded-\[16px\] {
+  background-image: none !important;
+  background-color: #7DA4FF !important;
+}
+
+
+/* v22 — purple glow under the card so it lifts off the gradient. The
+   pseudo bleeds out from below the card; warmer/violet so it adds
+   color rather than just matching the periwinkle bg. */
+body.hero-v22 .rounded-\[20px\].p-2\.5::after,
+body.hero-v23 .rounded-\[20px\].p-2\.5::after {
+  content: "";
+  position: absolute;
+  bottom: -120px;
+  left: 4%;
+  right: 4%;
+  height: 220px;
+  background: radial-gradient(
+    ellipse 55% 100% at 50% 0%,
+    rgba(167, 139, 250, 0.65) 0%,
+    rgba(167, 139, 250, 0) 70%
+  );
+  filter: blur(40px);
+  pointer-events: none;
+  opacity: 0.7;
+  z-index: -1;
 }
 
 /* v22 — text shimmer for the "Building [App]…" label in the progress

@@ -88,16 +88,7 @@ export function LogoStrip({ label, logos = [], variant = "light" }) {
             {label}
           </p>
         )}
-        <div
-          className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 md:gap-x-12"
-          aria-label="Alpha users"
-        >
-          {logos.map((logo, i) => (
-            <Reveal key={logo.name} delay={i * 70}>
-              <LogoItem name={logo.name} variant={itemVariant} />
-            </Reveal>
-          ))}
-        </div>
+        <LogoMarquee logos={logos} variant={itemVariant} ariaLabel="Alpha users" />
       </>
     );
   }

@@ -554,14 +554,23 @@ export function HeroPromptToAppV19({ borderless = false, progressHeader = false 
           <div className={`flex items-center ${borderless ? "" : "gap-1 overflow-hidden px-3"}`}>
             {APPS.map((a, i) => {
               const isActive = i === tabProgressIndex;
+              // A tab is "enabled" once its app is in flight or already
+              // built. Future apps in the cycle render dimmed +
+              // non-interactive, mirroring the sidebar's progressive
+              // install reveal.
+              const isEnabled = phase !== "running" || i <= cycleIndex;
               return (
                 <button
                   key={a.id}
                   type="button"
-                  onClick={() => handleTabClick(i)}
+                  onClick={() => isEnabled && handleTabClick(i)}
                   aria-label={`Show ${a.label}`}
+                  aria-disabled={!isEnabled}
                   className={[
-                    "pointer-events-auto relative flex cursor-pointer items-center text-[12px] leading-none transition-colors duration-150 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#101010]/40",
+                    "relative flex items-center text-[12px] leading-none transition-colors duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#101010]/40",
+                    isEnabled
+                      ? "pointer-events-auto cursor-pointer"
+                      : "pointer-events-none cursor-default",
                     borderless
                       ? "flex-1 basis-0 justify-center px-4 py-4"
                       : "shrink-0 gap-1.5 px-4 py-4",
@@ -572,8 +581,12 @@ export function HeroPromptToAppV19({ borderless = false, progressHeader = false 
                   {!borderless && (
                     <span
                       className={[
-                        "flex h-5 w-5 shrink-0 items-center justify-center",
-                        isActive ? "text-[#101010]/85" : "text-[#101010]/40",
+                        "flex h-5 w-5 shrink-0 items-center justify-center transition-colors duration-300",
+                        isActive
+                          ? "text-[#101010]/85"
+                          : isEnabled
+                          ? "text-[#101010]/40"
+                          : "text-[#101010]/20",
                       ].join(" ")}
                     >
                       <MaskIcon
@@ -583,7 +596,14 @@ export function HeroPromptToAppV19({ borderless = false, progressHeader = false 
                     </span>
                   )}
                   <span
-                    className={isActive ? "text-[#101010]/85" : "text-[#101010]/45"}
+                    className={[
+                      "transition-colors duration-300",
+                      isActive
+                        ? "text-[#101010]/85"
+                        : isEnabled
+                        ? "text-[#101010]/45"
+                        : "text-[#101010]/20",
+                    ].join(" ")}
                   >
                     {a.label}
                   </span>
@@ -613,7 +633,7 @@ export function HeroPromptToAppV19({ borderless = false, progressHeader = false 
 
         {/* ── Body: composer + portal ───────────────────────────── */}
         <div
-          className="grid grid-cols-1 gap-3 px-3 pt-3 pb-3 lg:grid-cols-[minmax(0,300px)_minmax(0,1fr)]"
+          className="grid grid-cols-1 gap-2 px-2 pt-2 pb-2 lg:gap-3 lg:px-3 lg:pt-3 lg:pb-3 lg:grid-cols-[minmax(0,300px)_minmax(0,1fr)]"
           style={
             borderless
               ? {
@@ -626,11 +646,11 @@ export function HeroPromptToAppV19({ borderless = false, progressHeader = false 
           }
         >
           {/* Composer — input-style panel */}
-          <div className="relative p-4">
-            <div className="mb-2 text-[12px] text-[#101010]/45">
+          <div className="relative p-3 lg:p-4">
+            <div className="mb-1.5 text-[12px] text-[#101010]/45 lg:mb-2">
               Describe your app
             </div>
-            <div className="relative min-h-[60px] text-[14px] leading-[1.5] text-[#101010]/85">
+            <div className="relative min-h-[44px] text-[14px] leading-[1.5] text-[#101010]/85 lg:min-h-[60px]">
               {/* Typed prompt layer — fades out when we enter the
                   "thinking" beat so the swap to the generating message
                   reads as a single soft cross-fade. */}
@@ -680,7 +700,7 @@ export function HeroPromptToAppV19({ borderless = false, progressHeader = false 
           {/* Portal preview */}
           <div className="relative">
             <div
-              className={`overflow-hidden rounded-[10px] border${borderless ? "" : " border-[#101010]/[0.10]"}`}
+              className={`overflow-hidden rounded-[10px] border shadow-[0_10px_28px_-8px_rgba(16,16,16,0.18)]${borderless ? "" : " border-[#101010]/[0.10]"}`}
               style={{
                 background: borderless ? "#F5F2E8" : "#FBFAF5",
                 ...(borderless ? { borderColor: "rgba(16,16,16,0.10)" } : {}),
@@ -799,8 +819,11 @@ export function HeroPromptToAppV19({ borderless = false, progressHeader = false 
                   </div>
                 </div>
 
-                {/* Main content: VIEWS with cross-fade + skeleton */}
-                <div className="relative h-full min-w-0 overflow-hidden">
+                {/* Main content: VIEWS with cross-fade + skeleton.
+                    Bottom-fade mask on mobile so the last visible row
+                    fades out instead of getting hard-cut at the portal
+                    edge. Desktop is tall enough that all rows fit. */}
+                <div className="hero-portal-content relative h-full min-w-0 overflow-hidden">
                   {Object.keys(VIEWS).map((id) => {
                     const isActive = id === activeAppId;
                     return (

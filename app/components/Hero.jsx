@@ -21,7 +21,7 @@ import { HeroPromptToAppV14 } from "./HeroPromptToAppV14";
 import { HeroPromptToAppV15 } from "./HeroPromptToAppV15";
 import { LogoStrip } from "./LogoStrip";
 
-const VERSIONS = ["v14", "v16", "v18", "v20", "v21", "v22"];
+const VERSIONS = ["v14", "v18", "v20", "v21", "v23"];
 const isVersion = (v) => VERSIONS.includes(v);
 
 const STORAGE_KEY = "hero-version";
@@ -64,10 +64,10 @@ export function Hero({
     } else {
       document.body.classList.remove("hero-v21");
     }
-    if (version === "v22") {
-      document.body.classList.add("hero-v22");
+    if (version === "v23") {
+      document.body.classList.add("hero-v23");
     } else {
-      document.body.classList.remove("hero-v22");
+      document.body.classList.remove("hero-v23");
     }
     if (version === "v13") {
       document.body.classList.add("hero-v13");
@@ -82,11 +82,6 @@ export function Hero({
       document.body.classList.remove("hero-v15");
       const narrative = document.querySelector('[data-section="narrative"]');
       if (narrative) narrative.setAttribute("data-nav-theme", "light");
-    }
-    if (version === "v16") {
-      document.body.classList.add("hero-v16");
-    } else {
-      document.body.classList.remove("hero-v16");
     }
     if (version === "v17") {
       document.body.classList.add("hero-v17");
@@ -112,13 +107,12 @@ export function Hero({
       outer.removeAttribute("data-nav-theme");
       document.body.classList.remove("hero-v13");
       document.body.classList.remove("hero-v15");
-      document.body.classList.remove("hero-v16");
       document.body.classList.remove("hero-v17");
       document.body.classList.remove("hero-v18");
       document.body.classList.remove("hero-v19");
       document.body.classList.remove("hero-v20");
       document.body.classList.remove("hero-v21");
-      document.body.classList.remove("hero-v22");
+      document.body.classList.remove("hero-v23");
       const narrative = document.querySelector('[data-section="narrative"]');
       if (narrative) narrative.setAttribute("data-nav-theme", "light");
     };
@@ -136,7 +130,7 @@ export function Hero({
 
   return (
     <div
-      className={version === "v8" || (version === "v9" || version === "v10" || version === "v11" || version === "v12" || version === "v13" || version === "v14" || version === "v15" || version === "v16" || version === "v17" || version === "v18" || version === "v19" || version === "v20" || version === "v21" || version === "v22") ? "relative" : "contents"}
+      className={version === "v8" || (version === "v9" || version === "v10" || version === "v11" || version === "v12" || version === "v13" || version === "v14" || version === "v15" || version === "v17" || version === "v18" || version === "v19" || version === "v20" || version === "v21" || version === "v23") ? "relative" : "contents"}
       {...(version === "v9" || version === "v13" || version === "v15" || version === "v19" || version === "v20" ? { "data-nav-theme": "light" } : {})}
     >
       {version === "v9" && (
@@ -184,11 +178,14 @@ export function Hero({
           style={{ background: "#101010" }}
         />
       )}
-      {version === "v22" && (
+      {version === "v23" && (
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 z-0"
-          style={{ background: "#101010" }}
+          style={{
+            background:
+              "linear-gradient(180deg, #101010 0%, #101010 30%, #7DA4FF 100%)",
+          }}
         />
       )}
       {version === "v10" && (
@@ -219,13 +216,6 @@ export function Hero({
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 z-0"
           style={{ background: "#101010" }}
-        />
-      )}
-      {version === "v16" && (
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-0"
-          style={{ background: "#1C1B18" }}
         />
       )}
       {version === "v17" && (
@@ -272,7 +262,7 @@ export function Hero({
             hidden, unchanged. */}
       <section
         className={`relative flex flex-col ${
-          version === "v7" || version === "v8" || (version === "v9" || version === "v10" || version === "v11" || version === "v12" || version === "v13" || version === "v14" || version === "v15" || version === "v16" || version === "v17" || version === "v18" || version === "v19" || version === "v20" || version === "v21" || version === "v22")
+          version === "v7" || version === "v8" || (version === "v9" || version === "v10" || version === "v11" || version === "v12" || version === "v13" || version === "v14" || version === "v15" || version === "v17" || version === "v18" || version === "v19" || version === "v20" || version === "v21" || version === "v23")
             ? ""
             : "overflow-hidden lg:h-[min(100vh,1080px)]"
         }`}
@@ -337,8 +327,6 @@ export function Hero({
             <HeroPromptToAppV14 />
           ) : version === "v15" ? (
             <HeroPromptToAppV15 />
-          ) : version === "v16" ? (
-            <HeroPromptToAppV15 />
           ) : version === "v17" ? (
             <HeroPromptToAppV15 variant="overlay" />
           ) : version === "v18" ? (
@@ -349,7 +337,7 @@ export function Hero({
             <HeroPromptToAppV19 borderless />
           ) : version === "v21" ? (
             <HeroPromptToAppV19 borderless />
-          ) : version === "v22" ? (
+          ) : version === "v23" ? (
             <HeroPromptToAppV19 borderless progressHeader />
           ) : (
             <HeroPromptToApp />
@@ -396,8 +384,10 @@ export function Hero({
           version. */}
       {alphaLogos && alphaLogos.length > 0 && (
         <div
-          className={`relative pb-10 pt-12 md:pb-12 md:pt-14 ${
-            version === "v8" || (version === "v9" || version === "v10" || version === "v11" || version === "v12" || version === "v13" || version === "v14" || version === "v15" || version === "v16" || version === "v17" || version === "v18" || version === "v19" || version === "v20" || version === "v21" || version === "v22") ? "" : "bg-[var(--color-bg)]"
+          className={`relative ${
+            version === "v23" ? "pb-6 pt-4 md:pb-8 md:pt-6" : "pb-10 pt-12 md:pb-12 md:pt-14"
+          } ${
+            version === "v8" || (version === "v9" || version === "v10" || version === "v11" || version === "v12" || version === "v13" || version === "v14" || version === "v15" || version === "v17" || version === "v18" || version === "v19" || version === "v20" || version === "v21" || version === "v23") ? "" : "bg-[var(--color-bg)]"
           } ${version === "v7" ? "lg:hidden" : ""}`}
         >
           <div className="mx-auto w-full max-w-[620px] px-6">
