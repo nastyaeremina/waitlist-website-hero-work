@@ -93,6 +93,10 @@ const SEND = 4000;
 const REVEAL_END = 5400;
 const CYCLE_MS = 8400;
 const FINAL_HOLD = 1200;
+// IDLE_HOLD only applies in progressHeader mode — after the final hold,
+// the composer clears and the "enter your next idea" cursor prompt
+// sits for this long before the cycle resets.
+const IDLE_HOLD = 5200;
 const RESET_FADE = 600;
 
 function useCycleClock() {
@@ -361,7 +365,25 @@ function SkeletonBlock({ height, shimmerX }) {
   );
 }
 
-function SidebarRow({ iconSrc, iconClass, label, active, muted, style }) {
+function SidebarRow({ iconSrc, iconClass, label, active, muted, style, skeleton, shimmerX }) {
+  if (skeleton) {
+    return (
+      <div
+        className="relative h-[26px] w-full overflow-hidden rounded bg-[#101010]/[0.06]"
+        style={style}
+      >
+        <span
+          aria-hidden="true"
+          className="absolute inset-y-0 w-[60%]"
+          style={{
+            background:
+              "linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.55) 50%, transparent 100%)",
+            transform: `translateX(${shimmerX}%)`,
+          }}
+        />
+      </div>
+    );
+  }
   return (
     <div
       className={[
@@ -384,14 +406,18 @@ function SidebarRow({ iconSrc, iconClass, label, active, muted, style }) {
 
 // ── Component ────────────────────────────────────────────────────
 
-export function HeroPromptToAppV19({ borderless = false } = {}) {
+export function HeroPromptToAppV19({ borderless = false, progressHeader = false } = {}) {
   const now = useCycleClock();
   // Clicking a tab anchors the cycle to start fresh at that app's
   // running beat — the cycle keeps progressing from there instead of
   // freezing.
   const [clickAnchor, setClickAnchor] = useState({ index: 0, time: 0 });
 
-  const totalMs = CYCLE_MS * APPS.length + FINAL_HOLD + RESET_FADE;
+  // Borderless variants (v20/v21/v22) get the "Added to your portal"
+  // success beat + "Enter your next idea" cursor idle beat after every
+  // full cycle. v19 keeps the original straight loop.
+  const idleHold = borderless ? IDLE_HOLD : 0;
+  const totalMs = CYCLE_MS * APPS.length + FINAL_HOLD + idleHold + RESET_FADE;
   const anchorOffsetMs = clickAnchor.index * CYCLE_MS;
   const sinceAnchor = Math.max(0, now - clickAnchor.time);
   const elapsed = (sinceAnchor + anchorOffsetMs) % totalMs;
@@ -399,14 +425,21 @@ export function HeroPromptToAppV19({ borderless = false } = {}) {
   let cycleIndex;
   let cycleT;
   let phase;
-  if (elapsed < CYCLE_MS * APPS.length) {
+  const runningEnd = CYCLE_MS * APPS.length;
+  const holdEnd = runningEnd + FINAL_HOLD;
+  const idleEnd = holdEnd + idleHold;
+  if (elapsed < runningEnd) {
     cycleIndex = Math.floor(elapsed / CYCLE_MS);
     cycleT = elapsed - cycleIndex * CYCLE_MS;
     phase = "running";
-  } else if (elapsed < CYCLE_MS * APPS.length + FINAL_HOLD) {
+  } else if (elapsed < holdEnd) {
     cycleIndex = APPS.length - 1;
     cycleT = CYCLE_MS;
     phase = "hold";
+  } else if (elapsed < idleEnd) {
+    cycleIndex = APPS.length - 1;
+    cycleT = CYCLE_MS;
+    phase = "idle";
   } else {
     cycleIndex = APPS.length - 1;
     cycleT = CYCLE_MS;
@@ -425,14 +458,30 @@ export function HeroPromptToAppV19({ borderless = false } = {}) {
   let installed;
   if (phase === "reset") {
     installed = 0;
-  } else if (phase === "hold") {
+  } else if (phase === "hold" || phase === "idle") {
     installed = APPS.length;
   } else {
-    installed = sent ? cycleIndex + 1 : cycleIndex;
+    // An app is "installed" (label revealed in sidebar) only once its
+    // generate beat completes. Before that it shows as a skeleton row.
+    installed = cycleT >= REVEAL_END ? cycleIndex + 1 : cycleIndex;
   }
 
+  // The app currently being generated — rendered as a skeleton row in
+  // the sidebar only while the composer shows "Hold on, we're
+  // generating your app…" (between TYPE_END and REVEAL_END). During
+  // typing nothing extra appears; once generation completes the row
+  // swaps to its real labeled form.
+  const installingApp =
+    phase === "running" && cycleT >= TYPE_END && cycleT < REVEAL_END
+      ? APPS[cycleIndex]
+      : null;
+
+  // Generating + sidebar skeleton run on the same window now so both
+  // surfaces shimmer and reveal together — no longer a 400ms gap
+  // where the composer says "Hold on…" but the portal still shows the
+  // previous app's content.
   const generating =
-    phase === "running" && cycleT >= SEND && cycleT < REVEAL_END;
+    phase === "running" && cycleT >= TYPE_END && cycleT < REVEAL_END;
   const thinking =
     phase === "running" && cycleT >= TYPE_END && cycleT < REVEAL_END + 200;
   const shimmerCycle = (now % 1800) / 1800;
@@ -449,6 +498,13 @@ export function HeroPromptToAppV19({ borderless = false } = {}) {
   const tabProgressIndex = cycleIndex;
   const tabProgress =
     phase === "running" ? Math.min(1, cycleT / CYCLE_MS) : 1;
+
+  // Overall progress across all apps — drives the single progress bar
+  // in progressHeader mode (0 at first prompt, 1 once every app is built).
+  const overallProgress =
+    phase === "running"
+      ? (cycleIndex * CYCLE_MS + cycleT) / (APPS.length * CYCLE_MS)
+      : 1;
 
   const handleTabClick = (idx) => {
     setClickAnchor({ index: idx, time: now });
@@ -470,7 +526,30 @@ export function HeroPromptToAppV19({ borderless = false } = {}) {
         className={borderless ? "relative w-full overflow-hidden rounded-[14px] border" : "contents"}
         style={borderless ? { backgroundColor: "#F5F2E8", borderColor: "rgba(16,16,16,0.10)" } : undefined}
       >
-        {/* ── Top tab strip ─────────────────────────────────────── */}
+        {/* ── Top chrome ────────────────────────────────────────────
+            Default: tab strip (one tab per app, clickable, progress
+            underbar tracking the current cycle). progressHeader: a
+            single status row + one continuous progress bar across all
+            apps (label updates as we move through each app). */}
+        {progressHeader ? (
+          <div className="border-b border-[#101010]/[0.08] px-5 pt-4 pb-4">
+            <div className="flex items-center justify-end text-[12px] leading-none text-[#101010]/40">
+              <span>
+                {(() => {
+                  // 4 parts = 3 app builds + the "ready for next idea" stage.
+                  const totalSteps = APPS.length + 1;
+                  const step =
+                    phase === "running"
+                      ? cycleIndex + 1
+                      : phase === "hold"
+                      ? APPS.length
+                      : totalSteps; // idle + reset
+                  return `${step} of ${totalSteps}`;
+                })()}
+              </span>
+            </div>
+          </div>
+        ) : (
         <div className="border-b border-[#101010]/[0.08] pb-0">
           <div className={`flex items-center ${borderless ? "" : "gap-1 overflow-hidden px-3"}`}>
             {APPS.map((a, i) => {
@@ -530,6 +609,7 @@ export function HeroPromptToAppV19({ borderless = false } = {}) {
             })}
           </div>
         </div>
+        )}
 
         {/* ── Body: composer + portal ───────────────────────────── */}
         <div
@@ -556,9 +636,22 @@ export function HeroPromptToAppV19({ borderless = false } = {}) {
                   reads as a single soft cross-fade. */}
               <div
                 className="transition-opacity duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
-                style={{ opacity: thinking ? 0 : 1 }}
+                style={{ opacity: thinking && phase !== "idle" ? 0 : 1 }}
               >
-                {promptText ? (
+                {(phase === "idle" || phase === "reset") && borderless ? (
+                  <span className="inline-flex items-center align-middle">
+                    <span className="hero-cursor-blink inline-block h-[16px] w-[1.5px] bg-[#101010]/85" />
+                    <span className="ml-[3px] text-[#101010]/35">
+                      Enter your next idea
+                    </span>
+                  </span>
+                ) : borderless &&
+                  ((phase === "running" && cycleT >= REVEAL_END) ||
+                    phase === "hold") ? (
+                  <span className="text-[#101010]/65">
+                    Added to your portal
+                  </span>
+                ) : promptText ? (
                   <>
                     {promptText}
                     {showCursor && !thinking && (
@@ -571,12 +664,13 @@ export function HeroPromptToAppV19({ borderless = false } = {}) {
                   </span>
                 )}
               </div>
-              {/* "Hold on…" layer — fades in over the typed prompt. */}
+              {/* "Hold on…" layer — fades in over the typed prompt.
+                  Text shimmer signals the build is actively running. */}
               <div
                 className="pointer-events-none absolute inset-0 transition-opacity duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
                 style={{ opacity: thinking ? 1 : 0 }}
               >
-                <span className="text-[#101010]/55">
+                <span className="hero-text-shimmer">
                   Hold on, we&apos;re generating your app…
                 </span>
               </div>
@@ -633,7 +727,7 @@ export function HeroPromptToAppV19({ borderless = false } = {}) {
                 </span>
               </div>
 
-              <div className="grid h-[420px] grid-cols-1 gap-0 lg:h-[520px] lg:grid-cols-[140px_1fr]">
+              <div className={`grid grid-cols-1 gap-0 lg:h-[520px] lg:grid-cols-[140px_1fr] ${borderless ? "h-[280px]" : "h-[420px]"}`}>
                 {/* Sidebar with progressive install — desktop only.
                     On mobile the portal is a single content pane and
                     the sidebar collapses into the mobile chrome above. */}
@@ -664,9 +758,7 @@ export function HeroPromptToAppV19({ borderless = false } = {}) {
                       muted
                     />
 
-                    {APPS.slice(0, installed).map((a, i) => {
-                      const isNewest = i === installed - 1;
-                      const isShimmering = isNewest && generating;
+                    {APPS.slice(0, installed).map((a) => {
                       const rowOpacity =
                         phase === "reset"
                           ? 1 -
@@ -689,24 +781,21 @@ export function HeroPromptToAppV19({ borderless = false } = {}) {
                               transition: "opacity 300ms ease",
                             }}
                           />
-                          {isShimmering && (
-                            <div
-                              aria-hidden="true"
-                              className="pointer-events-none absolute inset-0 overflow-hidden rounded"
-                            >
-                              <div
-                                className="absolute inset-y-0 w-[60%]"
-                                style={{
-                                  background:
-                                    "linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.55) 50%, transparent 100%)",
-                                  transform: `translateX(${shimmerX}%)`,
-                                }}
-                              />
-                            </div>
-                          )}
                         </div>
                       );
                     })}
+
+                    {installingApp && (
+                      <div key={`installing-${installingApp.id}`} className="relative">
+                        <SidebarRow
+                          iconSrc={installingApp.iconSrc}
+                          iconClass={installingApp.iconClass}
+                          muted
+                          skeleton
+                          shimmerX={shimmerX}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
 

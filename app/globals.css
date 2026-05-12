@@ -1230,32 +1230,74 @@ body.hero-v20 .bg-\[\#101010\]\/\[0\.04\] {
    (0.04/0.06/0.08 → 0.05/0.07/0.09) so highlights stay visible. The
    `#FEFDF8` chip cards collapse into the white surface the same way
    they collapse into cream in v20. */
-body.hero-v21 [style*="rgb(245, 242, 232)"] {
+body.hero-v21 [style*="rgb(245, 242, 232)"],
+body.hero-v22 [style*="rgb(245, 242, 232)"] {
   background-color: #FFFFFF !important;
 }
-body.hero-v21 .border-\[\#101010\]\/\[0\.06\] {
+body.hero-v21 .border-\[\#101010\]\/\[0\.06\],
+body.hero-v22 .border-\[\#101010\]\/\[0\.06\] {
   border-color: rgba(16, 16, 16, 0.08) !important;
 }
-body.hero-v21 .border-\[\#101010\]\/\[0\.08\] {
+body.hero-v21 .border-\[\#101010\]\/\[0\.08\],
+body.hero-v22 .border-\[\#101010\]\/\[0\.08\] {
   border-color: rgba(16, 16, 16, 0.10) !important;
 }
-body.hero-v21 .border-\[\#101010\]\/\[0\.10\] {
+body.hero-v21 .border-\[\#101010\]\/\[0\.10\],
+body.hero-v22 .border-\[\#101010\]\/\[0\.10\] {
   border-color: rgba(16, 16, 16, 0.12) !important;
 }
 body.hero-v21 .bg-\[\#101010\]\/\[0\.04\],
-body.hero-v21 .hover\:bg-\[\#101010\]\/\[0\.04\]:hover {
+body.hero-v21 .hover\:bg-\[\#101010\]\/\[0\.04\]:hover,
+body.hero-v22 .bg-\[\#101010\]\/\[0\.04\],
+body.hero-v22 .hover\:bg-\[\#101010\]\/\[0\.04\]:hover {
   background-color: rgba(16, 16, 16, 0.05) !important;
 }
-body.hero-v21 .bg-\[\#101010\]\/\[0\.06\] {
+body.hero-v21 .bg-\[\#101010\]\/\[0\.06\],
+body.hero-v22 .bg-\[\#101010\]\/\[0\.06\] {
   background-color: rgba(16, 16, 16, 0.07) !important;
 }
-body.hero-v21 .bg-\[\#101010\]\/\[0\.08\] {
+body.hero-v21 .bg-\[\#101010\]\/\[0\.08\],
+body.hero-v22 .bg-\[\#101010\]\/\[0\.08\] {
   background-color: rgba(16, 16, 16, 0.09) !important;
 }
 
-body.hero-v21 .bg-\[\#FEFDF8\] {
+body.hero-v21 .bg-\[\#FEFDF8\],
+body.hero-v22 .bg-\[\#FEFDF8\] {
   background-color: transparent !important;
 }
-body.hero-v21 .shadow-\[0_1px_2px_rgba\(16\,16\,16\,0\.04\)\] {
+body.hero-v21 .shadow-\[0_1px_2px_rgba\(16\,16\,16\,0\.04\)\],
+body.hero-v22 .shadow-\[0_1px_2px_rgba\(16\,16\,16\,0\.04\)\] {
   box-shadow: none !important;
+}
+
+/* v22 — text shimmer for the "Building [App]…" label in the progress
+   header. A bright band sweeps across a 40% → 95% → 40% gradient via
+   background-position keyframes; -webkit-background-clip:text masks
+   it to the glyphs so only the text receives the sheen. */
+@keyframes hero-text-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -100% 0; }
+}
+.hero-text-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    rgba(16, 16, 16, 0.40) 0%,
+    rgba(16, 16, 16, 0.95) 50%,
+    rgba(16, 16, 16, 0.40) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: hero-text-shimmer 2.2s linear infinite;
+}
+
+/* Hard on/off cursor blink (not Tailwind's soft animate-pulse) for the
+   idle "Enter your next idea" state — reads as a real text caret. */
+@keyframes hero-cursor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.hero-cursor-blink {
+  animation: hero-cursor-blink 1.05s steps(1) infinite;
 }
