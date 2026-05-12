@@ -13,6 +13,7 @@ import { HeroPromptToAppV8 } from "./HeroPromptToAppV8";
 import { HeroPromptToAppV9 } from "./HeroPromptToAppV9";
 import { HeroPromptToAppV18 } from "./HeroPromptToAppV18";
 import { HeroPromptToAppV19 } from "./HeroPromptToAppV19";
+import { HeroPromptToAppV21 } from "./HeroPromptToAppV21";
 import { HeroPromptToAppV10 } from "./HeroPromptToAppV10";
 import { HeroPromptToAppV11 } from "./HeroPromptToAppV11";
 import { HeroPromptToAppV12 } from "./HeroPromptToAppV12";
