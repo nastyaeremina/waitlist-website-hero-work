@@ -338,7 +338,7 @@ export function Hero({
           ) : version === "v21" ? (
             <HeroPromptToAppV19 borderless />
           ) : version === "v23" ? (
-            <HeroPromptToAppV19 borderless progressHeader />
+            <HeroPromptToAppV19 borderless />
           ) : (
             <HeroPromptToApp />
           )}
