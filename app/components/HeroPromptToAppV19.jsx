@@ -592,8 +592,11 @@ export function HeroPromptToAppV19({ borderless = false } = {}) {
                 ...(borderless ? { borderColor: "rgba(16,16,16,0.10)" } : {}),
               }}
             >
+              {/* Desktop chrome — traffic-lights bar. Hidden on mobile,
+                  where the portal renders as a single-pane mobile app
+                  with its own top bar (hamburger / app name / kebab). */}
               <div
-                className="flex h-7 shrink-0 items-center gap-1.5 border-b border-[#101010]/[0.06] px-3"
+                className="hidden h-7 shrink-0 items-center gap-1.5 border-b border-[#101010]/[0.06] px-3 lg:flex"
                 style={{ background: borderless ? "#F5F2E8" : "#F2F1EB" }}
               >
                 <span className="h-2.5 w-2.5 rounded-full bg-[#101010]/15" />
@@ -601,10 +604,41 @@ export function HeroPromptToAppV19({ borderless = false } = {}) {
                 <span className="h-2.5 w-2.5 rounded-full bg-[#101010]/15" />
               </div>
 
-              <div className="grid h-[360px] grid-cols-[140px_1fr] gap-0 lg:h-[520px]">
-                {/* Sidebar with progressive install */}
+              {/* Mobile chrome — single-pane "mobile app" top bar that
+                  replaces the sidebar on small screens: hamburger button
+                  on the left, current app/screen name next to it, kebab
+                  on the right. The hamburger/kebab are visual only —
+                  the cycle still drives the active app from the top tab
+                  strip above. */}
+              <div
+                className="flex h-12 shrink-0 items-center justify-between border-b border-[#101010]/[0.06] px-3 lg:hidden"
+                style={{ background: borderless ? "#F5F2E8" : "#F2F1EB" }}
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-[#101010]/[0.10] text-[#101010]/75">
+                    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                      <path d="M4 7h16M4 12h16M4 17h16" />
+                    </svg>
+                  </span>
+                  <span className="truncate text-[13px] text-[#101010]/85">
+                    {([...BUILT_IN, ...APPS].find((a) => a.id === activeAppId)?.label) ?? ""}
+                  </span>
+                </div>
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-[#101010]/[0.10] text-[#101010]/75">
+                  <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="currentColor" aria-hidden="true">
+                    <circle cx="5" cy="12" r="1.6" />
+                    <circle cx="12" cy="12" r="1.6" />
+                    <circle cx="19" cy="12" r="1.6" />
+                  </svg>
+                </span>
+              </div>
+
+              <div className="grid h-[420px] grid-cols-1 gap-0 lg:h-[520px] lg:grid-cols-[140px_1fr]">
+                {/* Sidebar with progressive install — desktop only.
+                    On mobile the portal is a single content pane and
+                    the sidebar collapses into the mobile chrome above. */}
                 <div
-                  className="flex h-full min-w-0 flex-col border-r border-[#101010]/[0.08] p-2.5"
+                  className="hidden h-full min-w-0 flex-col border-r border-[#101010]/[0.08] p-2.5 lg:flex"
                   style={{ background: borderless ? "#F5F2E8" : "#F2F1EB" }}
                 >
                   <div className="mb-3 flex items-center gap-2 px-2 py-1.5">

@@ -1223,20 +1223,39 @@ body.hero-v20 .bg-\[\#101010\]\/\[0\.04\] {
   background-color: rgba(90, 74, 46, 0.10) !important;
 }
 
-/* v21 — disable ZoomHero scale/round so the v21 curtain-inset
-   transition (driven from Hero.jsx) is the only motion. */
-body.hero-v21 .origin-top {
-  transform: none !important;
-  border-radius: 0 !important;
+/* v21 — same V19 borderless card structure as v20, on a dark (#101010)
+   page bg with no green gradient. Cream surfaces swap to pure white;
+   borders bump up a step (0.06/0.08/0.10 → 0.08/0.10/0.12) so they
+   still read against white, and the hover/active tints bump similarly
+   (0.04/0.06/0.08 → 0.05/0.07/0.09) so highlights stay visible. The
+   `#FEFDF8` chip cards collapse into the white surface the same way
+   they collapse into cream in v20. */
+body.hero-v21 [style*="rgb(245, 242, 232)"] {
+  background-color: #FFFFFF !important;
 }
-body.hero-v21 form {
-  background-color: #FBFAF5 !important;
+body.hero-v21 .border-\[\#101010\]\/\[0\.06\] {
+  border-color: rgba(16, 16, 16, 0.08) !important;
+}
+body.hero-v21 .border-\[\#101010\]\/\[0\.08\] {
+  border-color: rgba(16, 16, 16, 0.10) !important;
+}
+body.hero-v21 .border-\[\#101010\]\/\[0\.10\] {
+  border-color: rgba(16, 16, 16, 0.12) !important;
+}
+body.hero-v21 .bg-\[\#101010\]\/\[0\.04\],
+body.hero-v21 .hover\:bg-\[\#101010\]\/\[0\.04\]:hover {
+  background-color: rgba(16, 16, 16, 0.05) !important;
+}
+body.hero-v21 .bg-\[\#101010\]\/\[0\.06\] {
+  background-color: rgba(16, 16, 16, 0.07) !important;
+}
+body.hero-v21 .bg-\[\#101010\]\/\[0\.08\] {
+  background-color: rgba(16, 16, 16, 0.09) !important;
 }
 
-/* v21 — extend the lime frame past the hero into the page beneath
-   it. GradientReveal's content frame is var(--color-bg) (dark) by
-   default; override so the lime "canvas" reads continuously. The
-   ZoomHero outer's inline backdrop is recolored from Hero.jsx. */
-body.hero-v21 .relative.z-10.bg-\[var\(--color-bg\)\] {
-  background-color: #D9ED92 !important;
+body.hero-v21 .bg-\[\#FEFDF8\] {
+  background-color: transparent !important;
+}
+body.hero-v21 .shadow-\[0_1px_2px_rgba\(16\,16\,16\,0\.04\)\] {
+  box-shadow: none !important;
 }
