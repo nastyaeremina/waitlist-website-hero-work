@@ -1154,3 +1154,89 @@ body.hero-v17 .relative.z-10.w-full[class*="overflow-hidden"] {
 body.hero-v19 form {
   background-color: #FBFAF5 !important;
 }
+
+body.hero-v20 form {
+  background-color: #F5F2E8 !important;
+}
+
+/* v20 — flatten portal cards (drop the soft shadow used in v19). */
+body.hero-v20 .shadow-\[0_1px_2px_rgba\(16\,16\,16\,0\.04\)\] {
+  box-shadow: none !important;
+}
+
+/* v20 — retint the portal's cool `#101010`-based neutrals into the
+   site's warm cream/sepia palette so avatars, chips, and selected
+   states stop reading as "office grey" on a warm hero. The base ink
+   shifts from cool black to a warm sepia (#5A4A2E); opacity steps are
+   matched so the visual weight stays the same as v19. */
+body.hero-v20 .bg-\[\#101010\]\/\[0\.08\] {
+  background-color: rgba(90, 74, 46, 0.12) !important;
+}
+body.hero-v20 .bg-\[\#101010\]\/\[0\.06\] {
+  background-color: rgba(90, 74, 46, 0.10) !important;
+}
+body.hero-v20 .bg-\[\#101010\]\/\[0\.04\] {
+  background-color: rgba(90, 74, 46, 0.07) !important;
+}
+body.hero-v20 .border-\[\#101010\]\/\[0\.10\],
+body.hero-v20 .border-\[\#101010\]\/\[0\.08\],
+body.hero-v20 .border-\[\#101010\]\/\[0\.06\] {
+  border-color: rgba(16, 16, 16, 0.10) !important;
+}
+
+/* v20 — shift text inks from cool black (#101010) to a warm dark sepia
+   so headings, body, and labels harmonise with the cream hero. The
+   warm base (#3D2E1A) keeps enough contrast for readability while
+   killing the "office grey" cast. */
+body.hero-v20 .text-\[\#101010\]\/85,
+body.hero-v20 .text-\[\#101010\]\/80 {
+  color: rgba(61, 46, 26, 0.92) !important;
+}
+body.hero-v20 .text-\[\#101010\]\/75 {
+  color: rgba(61, 46, 26, 0.80) !important;
+}
+body.hero-v20 .text-\[\#101010\]\/55 {
+  color: rgba(61, 46, 26, 0.62) !important;
+}
+body.hero-v20 .text-\[\#101010\]\/45 {
+  color: rgba(61, 46, 26, 0.52) !important;
+}
+body.hero-v20 .text-\[\#101010\]\/40,
+body.hero-v20 .text-\[\#101010\]\/35,
+body.hero-v20 .text-\[\#101010\]\/30 {
+  color: rgba(61, 46, 26, 0.45) !important;
+}
+body.hero-v20 .bg-\[\#101010\]\/15 {
+  background-color: #F5F2E8 !important;
+  border: 1px solid rgba(16, 16, 16, 0.10);
+}
+
+/* v20 — collapse the portal palette to "off-white card + one darker
+   accent for shimmer/highlight" so the UI reads through borders alone.
+   Card surfaces (CARD constant, sidebar tint) drop their own bg and
+   show the cream hero through; only the loading skeleton keeps a
+   slightly darker fill so the shimmer remains legible. */
+body.hero-v20 .bg-\[\#FEFDF8\] {
+  background-color: transparent !important;
+}
+body.hero-v20 .bg-\[\#101010\]\/\[0\.04\] {
+  background-color: rgba(90, 74, 46, 0.10) !important;
+}
+
+/* v21 — disable ZoomHero scale/round so the v21 curtain-inset
+   transition (driven from Hero.jsx) is the only motion. */
+body.hero-v21 .origin-top {
+  transform: none !important;
+  border-radius: 0 !important;
+}
+body.hero-v21 form {
+  background-color: #FBFAF5 !important;
+}
+
+/* v21 — extend the lime frame past the hero into the page beneath
+   it. GradientReveal's content frame is var(--color-bg) (dark) by
+   default; override so the lime "canvas" reads continuously. The
+   ZoomHero outer's inline backdrop is recolored from Hero.jsx. */
+body.hero-v21 .relative.z-10.bg-\[var\(--color-bg\)\] {
+  background-color: #D9ED92 !important;
+}

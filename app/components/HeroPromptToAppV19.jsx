@@ -155,7 +155,6 @@ function HomeView() {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <div className="px-1 text-[11px] text-[#101010]/30">Latest updates</div>
         {updates.map((u, i) => (
           <div
             key={i}
@@ -250,7 +249,7 @@ function HelpdeskView() {
       {tickets.map((row, i) => (
         <div
           key={i}
-          className={`${CARD} grid min-w-0 grid-cols-[20px_auto_1fr_auto] items-center gap-x-1.5 pl-2 pr-3 py-2`}
+          className={`${CARD} grid min-w-0 grid-cols-[20px_auto_1fr] items-center gap-x-1.5 pl-2 pr-3 py-2`}
         >
           <span className="flex h-5 w-5 items-center justify-center rounded bg-[#101010]/[0.08] text-[9px] font-medium leading-none text-[#101010]/75">
             {row.client.slice(0, 2).toUpperCase()}
@@ -260,11 +259,6 @@ function HelpdeskView() {
           </span>
           <span className="min-w-0 truncate text-[11px] text-[#101010]/55">
             {row.subject}
-          </span>
-          <span
-            className={`whitespace-nowrap rounded-full px-1.5 py-0.5 text-[9px] ${statusTone[row.status]}`}
-          >
-            {row.status}
           </span>
         </div>
       ))}
@@ -390,7 +384,7 @@ function SidebarRow({ iconSrc, iconClass, label, active, muted, style }) {
 
 // ── Component ────────────────────────────────────────────────────
 
-export function HeroPromptToAppV19() {
+export function HeroPromptToAppV19({ borderless = false } = {}) {
   const now = useCycleClock();
   // Clicking a tab anchors the cycle to start fresh at that app's
   // running beat — the cycle keeps progressing from there instead of
@@ -466,15 +460,19 @@ export function HeroPromptToAppV19() {
           Light card sitting on the dark hero — single bordered surface
           wrapping tabs + composer + portal. */}
       <div
-        className="relative w-full overflow-hidden rounded-[16px] border"
+        className={`relative w-full${borderless ? " rounded-[20px] p-2.5" : " overflow-hidden rounded-[16px] border"}`}
         style={{
-          backgroundColor: "#FBFAF5",
-          borderColor: "rgba(16,16,16,0.10)",
+          backgroundColor: borderless ? "#F5F2E8" : "#FBFAF5",
+          ...(borderless ? {} : { borderColor: "rgba(16,16,16,0.10)" }),
         }}
+      >
+      <div
+        className={borderless ? "relative w-full overflow-hidden rounded-[14px] border" : "contents"}
+        style={borderless ? { backgroundColor: "#F5F2E8", borderColor: "rgba(16,16,16,0.10)" } : undefined}
       >
         {/* ── Top tab strip ─────────────────────────────────────── */}
         <div className="border-b border-[#101010]/[0.08] pb-0">
-          <div className="flex items-center gap-1 overflow-hidden px-3">
+          <div className={`flex items-center ${borderless ? "" : "gap-1 overflow-hidden px-3"}`}>
             {APPS.map((a, i) => {
               const isActive = i === tabProgressIndex;
               return (
@@ -484,22 +482,27 @@ export function HeroPromptToAppV19() {
                   onClick={() => handleTabClick(i)}
                   aria-label={`Show ${a.label}`}
                   className={[
-                    "pointer-events-auto relative flex shrink-0 cursor-pointer items-center gap-1.5 px-4 py-4 text-[12px] leading-none transition-colors duration-150 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#101010]/40",
+                    "pointer-events-auto relative flex cursor-pointer items-center text-[12px] leading-none transition-colors duration-150 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#101010]/40",
+                    borderless
+                      ? "flex-1 basis-0 justify-center px-4 py-4"
+                      : "shrink-0 gap-1.5 px-4 py-4",
                     i > 0 ? "border-l border-[#101010]/[0.08]" : "",
-                    i === APPS.length - 1 ? "border-r border-[#101010]/[0.08]" : "",
+                    !borderless && i === APPS.length - 1 ? "border-r border-[#101010]/[0.08]" : "",
                   ].join(" ")}
                 >
-                  <span
-                    className={[
-                      "flex h-5 w-5 shrink-0 items-center justify-center",
-                      isActive ? "text-[#101010]/85" : "text-[#101010]/40",
-                    ].join(" ")}
-                  >
-                    <MaskIcon
-                      src={a.iconSrc}
-                      className={a.tabIconClass ?? "h-4 w-4"}
-                    />
-                  </span>
+                  {!borderless && (
+                    <span
+                      className={[
+                        "flex h-5 w-5 shrink-0 items-center justify-center",
+                        isActive ? "text-[#101010]/85" : "text-[#101010]/40",
+                      ].join(" ")}
+                    >
+                      <MaskIcon
+                        src={a.iconSrc}
+                        className={a.tabIconClass ?? "h-4 w-4"}
+                      />
+                    </span>
+                  )}
                   <span
                     className={isActive ? "text-[#101010]/85" : "text-[#101010]/45"}
                   >
@@ -509,11 +512,13 @@ export function HeroPromptToAppV19() {
                     <span
                       aria-hidden="true"
                       className={[
-                        "absolute -bottom-[1px] z-10 h-[2px] origin-left bg-[#101010]",
-                        // For the first tab, extend the bar left into the
-                        // strip's px-3 gutter so progress starts flush at
-                        // the frame edge instead of inside the tab.
-                        i === 0
+                        `absolute -bottom-[1px] z-10 origin-left ${borderless ? "h-[1px] bg-[#A39C84]" : "h-[2px] bg-[#101010]"}`,
+                        // For the first tab in non-borderless mode, extend
+                        // the bar left into the strip's px-3 gutter so
+                        // progress starts flush at the frame edge. In
+                        // borderless mode tabs are equal-width and flush,
+                        // so the bar spans the tab itself.
+                        !borderless && i === 0
                           ? "-left-3 w-[calc(100%+0.75rem)]"
                           : "left-0 w-full",
                       ].join(" ")}
@@ -527,7 +532,19 @@ export function HeroPromptToAppV19() {
         </div>
 
         {/* ── Body: composer + portal ───────────────────────────── */}
-        <div className="grid grid-cols-1 gap-3 px-3 pt-3 pb-3 lg:grid-cols-[minmax(0,300px)_minmax(0,1fr)]">
+        <div
+          className="grid grid-cols-1 gap-3 px-3 pt-3 pb-3 lg:grid-cols-[minmax(0,300px)_minmax(0,1fr)]"
+          style={
+            borderless
+              ? {
+                  backgroundImage:
+                    "radial-gradient(rgba(16,16,16,0.10) 1px, transparent 1px)",
+                  backgroundSize: "14px 14px",
+                  backgroundPosition: "0 0",
+                }
+              : undefined
+          }
+        >
           {/* Composer — input-style panel */}
           <div className="relative p-4">
             <div className="mb-2 text-[12px] text-[#101010]/45">
@@ -569,12 +586,15 @@ export function HeroPromptToAppV19() {
           {/* Portal preview */}
           <div className="relative">
             <div
-              className="overflow-hidden rounded-[10px] border border-[#101010]/[0.10]"
-              style={{ background: "#FBFAF5" }}
+              className={`overflow-hidden rounded-[10px] border${borderless ? "" : " border-[#101010]/[0.10]"}`}
+              style={{
+                background: borderless ? "#F5F2E8" : "#FBFAF5",
+                ...(borderless ? { borderColor: "rgba(16,16,16,0.10)" } : {}),
+              }}
             >
               <div
                 className="flex h-7 shrink-0 items-center gap-1.5 border-b border-[#101010]/[0.06] px-3"
-                style={{ background: "#F2F1EB" }}
+                style={{ background: borderless ? "#F5F2E8" : "#F2F1EB" }}
               >
                 <span className="h-2.5 w-2.5 rounded-full bg-[#101010]/15" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[#101010]/15" />
@@ -585,7 +605,7 @@ export function HeroPromptToAppV19() {
                 {/* Sidebar with progressive install */}
                 <div
                   className="flex h-full min-w-0 flex-col border-r border-[#101010]/[0.08] p-2.5"
-                  style={{ background: "#F2F1EB" }}
+                  style={{ background: borderless ? "#F5F2E8" : "#F2F1EB" }}
                 >
                   <div className="mb-3 flex items-center gap-2 px-2 py-1.5">
                     <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-[#101010]/[0.06] text-[#101010]/80">
@@ -687,6 +707,7 @@ export function HeroPromptToAppV19() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
